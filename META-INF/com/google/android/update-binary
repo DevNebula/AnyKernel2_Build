@@ -21,6 +21,22 @@ set_perm_recursive() {
     find "$i" -type f -exec chmod $4 {} +;
   done;
 }
+## Acsii Art/Text has a Max width of 53 chars ##
+##       "12345678901234567890123456789012345678901234567890123"; Max Width##
+ui_print " __   _ _______ ______  _     _        _______";
+ui_print " | \  | |______ |_____] |     | |      |_____|";
+ui_print " |  \_| |______ |_____] |_____| |_____ |     |";
+ui_print "                                              ";
+ui_print "  ______ _____ _______ _______ _______        ";
+ui_print " |_____/   |   |______ |______ |______        ";
+ui_print " |    \_ __|__ ______| |______ ______|        ";
+ui_print "                                              ";
+ui_print " _______  ______ _______ _____ __   _         ";
+ui_print " |_____| |  ____ |_____|   |   | \  |         ";
+ui_print " |     | |_____| |     | __|__ |  \_|         ";
+ui_print "                                              ";
+
+
 file_getprop() { grep "^$2" "$1" | cut -d= -f2; }
 getprop() { test -e /sbin/getprop && /sbin/getprop $1 || file_getprop /default.prop $1; }
 abort() { ui_print "$*"; umount /system; umount /data; exit 1; }
@@ -54,6 +70,8 @@ if [ "$(file_getprop /tmp/anykernel/anykernel.sh do.devicecheck)" == 1 ]; then
   done;
   ui_print " ";
   if [ "$match" != 1 ]; then
+  ui_print "Your Device: $testname is not supported."
+  ui_print "Report to Author that your device is a $testname ..."
     abort "Unsupported device. Aborting...";
   fi;
 fi;
@@ -64,6 +82,33 @@ if [ "$(file_getprop /tmp/anykernel/anykernel.sh do.initd)" == 1 ]; then
   mount -o remount,rw -t auto /system;
   mkdir /system/etc/init.d;
   set_perm_recursive 0 0 0755 0755 /system/etc/init.d;
+  mount -o remount,ro -t auto /system;
+fi;
+
+if [ "$(file_getprop /tmp/anykernel/anykernel.sh do.pnpmgr)" == 1 ]; then
+  ui_print "[PNPMGR] Rename for backup...";
+  ui_print " ";
+  mount -o remount,rw -t auto /system;
+  if [ -e /system/bin/pnpmgr ]; then
+  	mv /system/bin/pnpmgr /system/bin/pnpmgr.bak;
+  	mv /system/etc/pnp.xml /system/etc/pnp.xml.bak;
+	else
+	  ui_print "[PNPMGR] Already Backed up..";
+  fi;
+  mount -o remount,ro -t auto /system;
+fi;
+
+
+if [ "$(file_getprop /tmp/anykernel/anykernel.sh do.pnpmgr)" == 2 ]; then
+  ui_print "[PNPMGR] Returning pnpmgr back to stock:";
+  ui_print " ";
+  mount -o remount,rw -t auto /system;
+  if [ -e /system/bin/pnpmgr.bak ]; then
+  	mv /system/bin/pnpmgr.bak /system/bin/pnpmgr;
+  	mv /system/etc/pnp.xml.bak /system/etc/pnp.xml;
+	else
+	  ui_print "[PNPMGR] No Action Needed:";
+  fi;
   mount -o remount,ro -t auto /system;
 fi;
 
@@ -79,6 +124,7 @@ if [ $? != "0" ]; then
   abort;
 fi;
 
+
 if [ "$(file_getprop /tmp/anykernel/anykernel.sh do.modules)" == 1 ]; then
   ui_print " ";
   ui_print "Pushing modules...";
@@ -88,12 +134,55 @@ if [ "$(file_getprop /tmp/anykernel/anykernel.sh do.modules)" == 1 ]; then
   mount -o remount,ro -t auto /system;
 fi;
 
+if [ "$(file_getprop /tmp/anykernel/anykernel.sh do.boost_scripts)" == 1 ]; then
+ui_print "[Nebula] Pushing Boot Scripts...";
+  ui_print " ";
+  mount -o remount,rw -t auto /system;
+  rm /system/etc/init.d/nebulix-post_boot.sh;
+  rm /system/su.d/nebulix-post_boot.sh;  
+  if [ -d "$system/su.d" ]
+  then  
+    cp -rf /tmp/anykernel/system/su.d/* /system/su.d/;
+    set_perm_recursive 0 0 0755 0755 /system/su.d;
+  else
+    mkdir /system/su.d;
+    cp -rf /tmp/anykernel/system/su.d/* /system/su.d/;
+    set_perm_recursive 0 0 0755 0755 /system/su.d;
+  fi;
+	  mount -o remount,ro -t auto /system;
+fi;
+
+
+if [ "$(file_getprop /tmp/anykernel/anykernel.sh do.system_blobs)" == 1 ]; then
+ui_print "[Nebula] Pushing System Blobs...";
+	ui_print " ";
+	mount -o remount,rw -t auto /system;
+		cp -rf /tmp/anykernel/system/lib/* /system/lib/;
+		cp -rf /tmp/anykernel/system/lib/hw/* /system/lib/hw/;
+		cp -rf /tmp/anykernel/system/lib64/* /system/lib64/;
+		cp -rf /tmp/anykernel/system/lib64/hw/* /system/lib64/hw/;
+		set_perm_recursive 0 0 0755 0755 /system/lib;
+		set_perm_recursive 0 0 0755 0755 /system/lib/hw;
+		set_perm_recursive 0 0 0755 0755 /system/lib64;
+		set_perm_recursive 0 0 0755 0755 /system/lib64/hw;
+		mount -o remount,ro -t auto /system;		
+fi;
+
+
 if [ "$(file_getprop /tmp/anykernel/anykernel.sh do.cleanup)" == 1 ]; then
+ui_print "[Nebula] Cleaning up...";
   rm -rf /tmp/anykernel;
 fi;
 
 umount /system;
 umount /data;
-ui_print " ";
-ui_print "Done!";
+ui_print "                      ''~``                        ";
+ui_print "                      ( o o )                      ";
+ui_print "+----------------.oooO--(_)--Oooo.----------------+";
+ui_print "| [LGV10]    Codded By @Eliminater74    [Kernel]  |";
+ui_print "|                  .oooO                          |";
+ui_print "|  Nebula          (   )   Oooo.     Returns      |";
+ui_print "+-------------------\ (----(   )------------------+";
+ui_print "                     \_)    ) /                    ";
+ui_print "                           (_/                     ";
 
