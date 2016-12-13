@@ -14,11 +14,11 @@ do.fix_pnpmgr_ramdisk=0
 do.boost_scripts=0
 do.cmdlinestr=0
 do.system_blobs=0
-device.name1=pplus
-device.name2=h901
-device.name3=
-device.name4=
-device.name5=
+device.name1=htc_pmewl
+device.name2=htc_pmeuhl
+device.name3=htc_pmewhl
+device.name4=htc10
+device.name5=htc
 
 # shell variables
 block=/dev/block/bootdevice/by-name/boot;
