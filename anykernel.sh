@@ -41,7 +41,7 @@ dump_boot;
 
 # begin ramdisk changes
 
-insert_line init.rc "import /init.nebula.rc" after "import /init.power.rc" "import /init.nebula.rc";
+insert_line init.rc "import /init.nebula.rc" after "import /init.lge.rc" "import /init.nebula.rc";
 
 
 # end ramdisk changes
