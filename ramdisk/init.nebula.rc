@@ -1,6 +1,198 @@
 ## init.nebula.rc file (C) 2016 By @Eliminater74 ###
 
 on boot
+    symlink /dev/block/platform/soc.0/f9824900.sdhci /dev/block/bootdevice
+
+    ###################### Nebula Kernel Settings ########################
+    # take the A57s offline when thermal hotplug is disabled
+    write /sys/devices/system/cpu/cpu4/online 0
+    write /sys/devices/system/cpu/cpu5/online 0
+
+    # disable msm_thermal to switch governor
+    write /sys/module/msm_thermal/core_control/enabled 0
+
+    # some files in /sys/devices/system/cpu are created after the restorecon of
+    # /sys/. These files receive the default label "sysfs".
+    # Restorecon again to give new files the correct label.
+    restorecon_recursive /sys/devices/system/cpu
+
+    # Best effort limiting for first time boot if msm_performance module is absent
+    write /sys/devices/system/cpu/cpu4/cpufreq/scaling_max_freq 960000
+
+    # Limit A57 max freq from msm_perf module in case CPU 4 is offline
+    write /sys/module/msm_performance/parameters/cpu_max_freq "4:960000 5:960000"
+
+    # Disable CPU retention
+    write /sys/module/lpm_levels/system/a53/cpu0/retention/idle_enabled 0
+    write /sys/module/lpm_levels/system/a53/cpu1/retention/idle_enabled 0
+    write /sys/module/lpm_levels/system/a53/cpu2/retention/idle_enabled 0
+    write /sys/module/lpm_levels/system/a53/cpu3/retention/idle_enabled 0
+    write /sys/module/lpm_levels/system/a57/cpu4/retention/idle_enabled 0
+    write /sys/module/lpm_levels/system/a57/cpu5/retention/idle_enabled 0
+
+    # Disable L2 retention
+    write /sys/module/lpm_levels/system/a53/a53-l2-retention/idle_enabled 0
+    write /sys/module/lpm_levels/system/a57/a57-l2-retention/idle_enabled 0
+
+    # configure governor settings for little cluster
+    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor interactive
+    restorecon_recursive /sys/devices/system/cpu
+    write /sys/devices/system/cpu/cpu0/cpufreq/interactive/use_sched_load 1
+    write /sys/devices/system/cpu/cpu0/cpufreq/interactive/use_migration_notif 1
+    write /sys/devices/system/cpu/cpu0/cpufreq/interactive/above_hispeed_delay 19000
+    write /sys/devices/system/cpu/cpu0/cpufreq/interactive/go_hispeed_load 99
+    write /sys/devices/system/cpu/cpu0/cpufreq/interactive/timer_rate 19000
+    write /sys/devices/system/cpu/cpu0/cpufreq/interactive/hispeed_freq 960000
+    write /sys/devices/system/cpu/cpu0/cpufreq/interactive/io_is_busy 1
+    write /sys/devices/system/cpu/cpu0/cpufreq/interactive/target_loads "50 600000:65 787200:75 960000:80"
+    write /sys/devices/system/cpu/cpu0/cpufreq/interactive/min_sample_time 40000
+    write /sys/devices/system/cpu/cpu0/cpufreq/interactive/max_freq_hysteresis 80000
+    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq 384000
+
+    # online CPU4
+    write /sys/devices/system/cpu/cpu4/online 1
+
+    # configure governor settings for big cluster
+    write /sys/devices/system/cpu/cpu4/cpufreq/scaling_governor interactive
+    restorecon_recursive /sys/devices/system/cpu
+    write /sys/devices/system/cpu/cpu4/cpufreq/interactive/use_sched_load 1
+    write /sys/devices/system/cpu/cpu4/cpufreq/interactive/use_migration_notif 1
+    write /sys/devices/system/cpu/cpu4/cpufreq/interactive/above_hispeed_delay 19000
+    write /sys/devices/system/cpu/cpu4/cpufreq/interactive/go_hispeed_load 99
+    write /sys/devices/system/cpu/cpu4/cpufreq/interactive/timer_rate 19000
+    write /sys/devices/system/cpu/cpu4/cpufreq/interactive/hispeed_freq 1248000
+    write /sys/devices/system/cpu/cpu4/cpufreq/interactive/io_is_busy 1
+    write /sys/devices/system/cpu/cpu4/cpufreq/interactive/target_loads "70 960000:80 1248000:85"
+    write /sys/devices/system/cpu/cpu4/cpufreq/interactive/min_sample_time 40000
+    write /sys/devices/system/cpu/cpu4/cpufreq/interactive/max_freq_hysteresis 80000
+    write /sys/devices/system/cpu/cpu4/cpufreq/scaling_min_freq 633600
+
+    # restore A57's max
+    copy /sys/devices/system/cpu/cpu4/cpufreq/cpuinfo_max_freq /sys/devices/system/cpu/cpu4/cpufreq/scaling_max_freq
+
+    # plugin remaining A57s
+    write /sys/devices/system/cpu/cpu5/online 1
+
+    # Restore CPU 4 max freq from msm_performance
+    write /sys/module/msm_performance/parameters/cpu_max_freq "4:4294967295 5:4294967295"
+
+    # input boost configuration
+    write /sys/module/cpu_boost/parameters/input_boost_freq "0:1248000 4:768000"
+    write /sys/module/cpu_boost/parameters/input_boost_ms 40
+
+    # enable rps static configuration
+    write /sys/class/net/rmnet_ipa0/queues/rx-0/rps_cpus 8
+
+    # re-enable msm_thermal
+    write /sys/module/msm_thermal/core_control/enabled 1
+
+    # set GPU default power level to 5 (180MHz) instead of 4 (305MHz)
+    write /sys/class/kgsl/kgsl-3d0/default_pwrlevel 5
+
+    # devfreq
+    write /sys/class/devfreq/qcom,cpubw.27/governor bw_hwmon
+    restorecon_recursive /sys/class/devfreq/qcom,cpubw.27
+    write /sys/class/devfreq/qcom,cpubw.27/bw_hwmon/sample_ms 4
+    write /sys/class/devfreq/qcom,cpubw.27/bw_hwmon/io_percent 34
+    write /sys/class/devfreq/qcom,cpubw.27/bw_hwmon/hist_memory 20
+    write /sys/class/devfreq/qcom,cpubw.27/bw_hwmon/hyst_length 10
+    write /sys/class/devfreq/qcom,cpubw.27/bw_hwmon/low_power_ceil_mbps 0
+    write /sys/class/devfreq/qcom,cpubw.27/bw_hwmon/low_power_io_percent 34
+    write /sys/class/devfreq/qcom,cpubw.27/bw_hwmon/low_power_delay 20
+    write /sys/class/devfreq/qcom,cpubw.27/bw_hwmon/guard_band_mbps 0
+    write /sys/class/devfreq/qcom,cpubw.27/bw_hwmon/up_scale 250
+    write /sys/class/devfreq/qcom,cpubw.27/bw_hwmon/idle_mbps 1600
+    write /sys/class/devfreq/qcom,mincpubw.28/governor cpufreq
   
 
 on property:sys.boot_completed=1
+
+	write /sys/module/cluster_plug/parameters/active 1
+	write /sys/module/cluster_plug/parameters/load_threshold_down 20
+	write /sys/module/cluster_plug/parameters/load_threshold_up 80
+	write /sys/module/cluster_plug/parameters/low_power_mode 0
+	write /sys/module/cluster_plug/parameters/sampling_time 50
+	write /sys/module/cluster_plug/parameters/vote_threshold_down 3
+	write /sys/module/cluster_plug/parameters/vote_threshold_up 3
+	
+	 # allow CPUs to go in deeper idle state than C0
+	write /sys/module/lpm_levels/parameters/sleep_disabled 0
+	
+	# Configure governor settings for little cluster
+##	write /sys/devices/system/cpu/cpu0/cpufreq/interactive/above_hispeed_delay "30000 600000:20000 672000:10000"
+#	write /sys/devices/system/cpu/cpu0/cpufreq/interactive/align_windows
+#	write /sys/devices/system/cpu/cpu0/cpufreq/interactive/boost
+#	write /sys/devices/system/cpu/cpu0/cpufreq/interactive/boostpulse
+#	write /sys/devices/system/cpu/cpu0/cpufreq/interactive/boostpulse_duration
+##	write /sys/devices/system/cpu/cpu0/cpufreq/interactive/go_hispeed_load "75"
+#	write /sys/devices/system/cpu/cpu0/cpufreq/interactive/gpu_max_freq
+#	write /sys/devices/system/cpu/cpu0/cpufreq/interactive/gpu_range_end_freq
+#	write /sys/devices/system/cpu/cpu0/cpufreq/interactive/gpu_range_enter_time
+#	write /sys/devices/system/cpu/cpu0/cpufreq/interactive/gpu_range_out_time
+#	write /sys/devices/system/cpu/cpu0/cpufreq/interactive/gpu_range_start_freq
+#	write /sys/devices/system/cpu/cpu0/cpufreq/interactive/gpu_target_load
+##	write /sys/devices/system/cpu/cpu0/cpufreq/interactive/hispeed_freq "460Mhz"
+#	write /sys/devices/system/cpu/cpu0/cpufreq/interactive/io_is_busy
+#	write /sys/devices/system/cpu/cpu0/cpufreq/interactive/is_cancun
+#	write /sys/devices/system/cpu/cpu0/cpufreq/interactive/is_cancun_activated
+#	write /sys/devices/system/cpu/cpu0/cpufreq/interactive/max_freq_hysteresis
+##	write /sys/devices/system/cpu/cpu0/cpufreq/interactive/min_sample_time "60000"
+##	write /sys/devices/system/cpu/cpu0/cpufreq/interactive/target_loads "75 460000:69 600000:80 672000:76 787000:81 864000:81 960000:69 1248000:78"
+##	write /sys/devices/system/cpu/cpu0/cpufreq/interactive/timer_rate "20000"
+##	write /sys/devices/system/cpu/cpu0/cpufreq/interactive/timer_slack "-1"
+##	write /sys/devices/system/cpu/cpu0/cpufreq/interactive/use_migration_notif "1"
+##	write /sys/devices/system/cpu/cpu0/cpufreq/interactive/use_sched_load "1"
+	
+	# Configure governor settings for Big cluster
+##	write /sys/devices/system/cpu/cpu4/cpufreq/interactive/above_hispeed_delay "10000"
+#	write /sys/devices/system/cpu/cpu4/cpufreq/interactive/align_windows
+#	write /sys/devices/system/cpu/cpu4/cpufreq/interactive/boost
+#	write /sys/devices/system/cpu/cpu4/cpufreq/interactive/boostpulse
+#	write /sys/devices/system/cpu/cpu4/cpufreq/interactive/boostpulse_duration
+##	write /sys/devices/system/cpu/cpu4/cpufreq/interactive/go_hispeed_load "72"
+#	write /sys/devices/system/cpu/cpu4/cpufreq/interactive/gpu_max_freq
+#	write /sys/devices/system/cpu/cpu4/cpufreq/interactive/gpu_range_end_freq
+#	write /sys/devices/system/cpu/cpu4/cpufreq/interactive/gpu_range_enter_time
+#	write /sys/devices/system/cpu/cpu4/cpufreq/interactive/gpu_range_out_time
+#	write /sys/devices/system/cpu/cpu4/cpufreq/interactive/gpu_range_start_freq
+#	write /sys/devices/system/cpu/cpu4/cpufreq/interactive/gpu_target_load
+##	write /sys/devices/system/cpu/cpu4/cpufreq/interactive/hispeed_freq "633Mhz"
+#	write /sys/devices/system/cpu/cpu4/cpufreq/interactive/io_is_busy
+#	write /sys/devices/system/cpu/cpu4/cpufreq/interactive/is_cancun
+#	write /sys/devices/system/cpu/cpu4/cpufreq/interactive/is_cancun_activated
+#	write /sys/devices/system/cpu/cpu4/cpufreq/interactive/max_freq_hysteresis
+##	write /sys/devices/system/cpu/cpu4/cpufreq/interactive/min_sample_time "100000"
+##	write /sys/devices/system/cpu/cpu4/cpufreq/interactive/target_loads "72 480000:68 633000:74 768000:80 864000:81 960000:69 1248000:83 1344000:84 1440000:84 1536000:84 1632000:86 1689000:83"
+##	write /sys/devices/system/cpu/cpu4/cpufreq/interactive/timer_rate "10000"
+##	write /sys/devices/system/cpu/cpu4/cpufreq/interactive/timer_slack "80000"
+##	write /sys/devices/system/cpu/cpu4/cpufreq/interactive/use_migration_notif "1"
+##	write /sys/devices/system/cpu/cpu4/cpufreq/interactive/use_sched_load "1"
+	
+	
+	
+	
+	
+	# Input boost configuration
+	write /sys/kernel/cpu_input_boost/ib_freqs "1248000 1248000"
+	write /sys/kernel/cpu_input_boost/ib_duration_ms 500
+	write /sys/kernel/cpu_input_boost/enabled 1
+	
+	
+	# Set thermal restrictions  
+#	write /sys/kernel/msm_thermal/enabled 0
+#	write /sys/kernel/msm_thermal/zone0 "1440000 1824000 50 45"
+#	write /sys/kernel/msm_thermal/zone1 "1248000 1820000 53 50"
+#	write /sys/kernel/msm_thermal/zone2 "1401600 1824000 55 53"
+#	write /sys/kernel/msm_thermal/zone3 "1324800 1824000 57 55"
+#	write /sys/kernel/msm_thermal/zone4 "1324800 1708800 58 57"
+#	write /sys/kernel/msm_thermal/zone5 "1324800 1555200 59 58"
+#	write /sys/kernel/msm_thermal/zone6 "1324800 1324800 60 59"
+#	write /sys/kernel/msm_thermal/zone7 "1190400 1248000 63 60"
+#	write /sys/kernel/msm_thermal/zone8 "1036000 1036000 70 63"
+#	write /sys/kernel/msm_thermal/sampling_ms 8000
+#	write /sys/kernel/msm_thermal/enabled 1
+	
+	# Set I//O Scheduler
+	write /sys/block/mmcblk0/queue/scheduler "fiops"
+#	write /sys/block/mmcblk0/queue/scheduler "fiops"
+#	write /sys/block/mmcblk1/queue/scheduler "fiops"
