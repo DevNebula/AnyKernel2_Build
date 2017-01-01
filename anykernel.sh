@@ -3,7 +3,7 @@
 
 ## AnyKernel setup
 # EDIFY properties
-kernel.string=Nebulix_HTC10_PME_N
+kernel.string=Nebula_HTC10_PME_N
 do.devicecheck=1
 do.initd=1
 do.modules=0
