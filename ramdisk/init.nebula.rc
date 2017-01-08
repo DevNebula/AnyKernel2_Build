@@ -13,12 +13,18 @@ on boot
     write /sys/kernel/msm_thermal/zone1 "1228800 1555200 50 47"
     write /sys/kernel/msm_thermal/zone2 "1036800 1248000 55 53"
     write /sys/kernel/msm_thermal/zone3 "729600 729600 65 63"
-    write /sys/kernel/msm_thermal/enabled 1
+    write /sys/kernel/msm_thermal/enabled 
+    
+    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq 1593600
+    write /sys/devices/system/cpu/cpu2/cpufreq/scaling_max_freq 2150400
     
 on enable-low-power
     # Enable Adaptive LMK
     write /sys/module/lowmemorykiller/parameters/enable_adaptive_lmk 1
-    write /sys/module/lowmemorykiller/parameters/vmpressure_file_min 81250
+    write /sys/module/lowmemorykiller/parameters/vmpressure_file_min 
+    
+    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq 1593600
+    write /sys/devices/system/cpu/cpu2/cpufreq/scaling_max_freq 2150400
 
     # Configure governor settings for little cluster
     write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor "interactive"
@@ -55,6 +61,9 @@ on enable-low-power
 
 on property:sys.boot_completed=1
 
+    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq 1593600
+    write /sys/devices/system/cpu/cpu2/cpufreq/scaling_max_freq 2150400
+
   # Input boost configuration
     write /sys/kernel/cpu_input_boost/ib_freqs "1190400 1190400"
     write /sys/kernel/cpu_input_boost/ib_duration_ms 500
@@ -73,8 +82,7 @@ on property:sys.boot_completed=1
     write /sys/kernel/msm_thermal/zone8 "1036000 1036000 70 63"
     write /sys/kernel/msm_thermal/sampling_ms 8000
     write /sys/kernel/msm_thermal/enabled 1
-		
-		
+			
 on property:sys.boot_completed=1
     trigger enable-low-power
 
@@ -105,6 +113,10 @@ on property:sys.perf.profile=0
     write /sys/kernel/msm_thermal/enabled 1
 
 on property:sys.perf.profile=1
+	
+    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq 1593600
+    write /sys/devices/system/cpu/cpu2/cpufreq/scaling_max_freq 2150400
+    
     # Set normal performance settings
     write /sys/kernel/msm_thermal/user_maxfreq 0
     write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor "interactive"
