@@ -91,7 +91,10 @@ if [ "$(file_getprop /tmp/anykernel/anykernel.sh do.pnpmgr)" == 1 ]; then
   mount -o remount,rw -t auto /system;
   if [ -e /system/bin/pnpmgr ]; then
   	mv /system/bin/pnpmgr /system/bin/pnpmgr.bak;
+  	ui_print "[PNPMGR] Renamed system/bin/pnpmgr";
+  elif [ -e /system/etc/pnp.xml ]; then
   	mv /system/etc/pnp.xml /system/etc/pnp.xml.bak;
+  	ui_print "[PNPMGR] Renamed system/bin/pnp.xml";
 	else
 	  ui_print "[PNPMGR] Already Backed up..";
   fi;

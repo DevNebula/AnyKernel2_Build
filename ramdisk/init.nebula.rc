@@ -58,6 +58,47 @@ on enable-low-power
     write /sys/devices/system/cpu/cpu2/cpufreq/interactive/max_freq_hysteresis 100000
     write /sys/devices/system/cpu/cpu2/cpufreq/scaling_min_freq 307200
     write /sys/devices/system/cpu/cpu2/cpufreq/interactive/ignore_hispeed_on_notif 1    
+    
+   # Enable core control
+   # Core Control: Little Cluster :
+#    write /sys/devices/system/cpu/cpu2/core_ctl/always_online_cpu "1 0"
+    write /sys/devices/system/cpu/cpu0/core_ctl/busy_down_thres 20
+    write /sys/devices/system/cpu/cpu0/core_ctl/busy_up_thres 60
+#    write /sys/devices/system/cpu/cpu0/core_ctl/cpus
+    write /sys/devices/system/cpu/cpu0/core_ctl/disable 0
+#    write /sys/devices/system/cpu/cpu0/core_ctl/global_state
+    write /sys/devices/system/cpu/cpu0/core_ctl/is_big_cluster 0
+    write /sys/devices/system/cpu/cpu0/core_ctl/max_cpus 2
+    write /sys/devices/system/cpu/cpu0/core_ctl/min_cpus 1
+#    write /sys/devices/system/cpu/cpu0/core_ctl/need_cpus
+#    write /sys/devices/system/cpu/cpu0/core_ctl/not_preferred 1
+    write /sys/devices/system/cpu/cpu0/core_ctl/offline_delay_ms 600
+    write /sys/devices/system/cpu/cpu0/core_ctl/online_cpus "1 0"
+#    write /sys/devices/system/cpu/cpu0/core_ctl/task_thres 4
+    
+   # Allow system to set min/max cpus for Little.cluster
+    chown system:system /sys/devices/system/cpu/cpu0/core_ctl/min_cpus
+    chown system:system /sys/devices/system/cpu/cpu0/core_ctl/max_cpus    
+    
+   # Core Control: Big Cluster: 
+#    write /sys/devices/system/cpu/cpu2/core_ctl/always_online_cpu "1 0"
+    write /sys/devices/system/cpu/cpu2/core_ctl/busy_down_thres 25
+    write /sys/devices/system/cpu/cpu2/core_ctl/busy_up_thres 75
+#    write /sys/devices/system/cpu/cpu2/core_ctl/cpus
+    write /sys/devices/system/cpu/cpu2/core_ctl/disable 0
+#    write /sys/devices/system/cpu/cpu2/core_ctl/global_state
+    write /sys/devices/system/cpu/cpu2/core_ctl/is_big_cluster 1
+    write /sys/devices/system/cpu/cpu2/core_ctl/max_cpus 2
+    write /sys/devices/system/cpu/cpu2/core_ctl/min_cpus 1
+#    write /sys/devices/system/cpu/cpu2/core_ctl/need_cpus
+#    write /sys/devices/system/cpu/cpu2/core_ctl/not_preferred 1
+    write /sys/devices/system/cpu/cpu2/core_ctl/offline_delay_ms 300
+    write /sys/devices/system/cpu/cpu2/core_ctl/online_cpus "1 0"
+#    write /sys/devices/system/cpu/cpu2/core_ctl/task_thres 4294967295
+    
+   # Allow system to set min/max cpus for Big.cluster
+    chown system:system /sys/devices/system/cpu/cpu2/core_ctl/min_cpus
+    chown system:system /sys/devices/system/cpu/cpu2/core_ctl/max_cpus
 
 on property:sys.boot_completed=1
 
