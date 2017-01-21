@@ -28,8 +28,8 @@ on enable-low-power
     write /sys/module/lowmemorykiller/parameters/enable_adaptive_lmk 1
     write /sys/module/lowmemorykiller/parameters/vmpressure_file_min 
     
-#    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq 1593600
-#    write /sys/devices/system/cpu/cpu2/cpufreq/scaling_max_freq 2150400
+    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq 1593600
+    write /sys/devices/system/cpu/cpu2/cpufreq/scaling_max_freq 2150400
 
     # Configure governor settings for little cluster
 #    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor "interactive"
@@ -72,7 +72,7 @@ on enable-low-power
 		#Temporarily change permissions to governor files for the LITTLE cluster to lower the maximum frequency to 1996MHz
 		chmod 644 /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
 		#Core 0 Maximum Frequency = 1996MHz	
-		write /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq "1996800"		
+		write /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq 1593600	
 		chmod 444 /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
 		#Tweak Interactive Governor
 		write /sys/devices/system/cpu/cpu0/cpufreq/interactive/target_loads "60 460800:75 614400:77 844800:80 1132800:85 1286400:87 1440000:90 1593600:92 1824000:95 1996800:100"
@@ -93,21 +93,21 @@ on enable-low-power
     
     # Apply settings to Big cluster
     # Temporarily change permissions to governor files for the Big cluster to enable Interactive governor
-		chmod 644 /sys/devices/system/cpu/cpu2/cpufreq/scaling_governor
+#		chmod 644 /sys/devices/system/cpu/cpu2/cpufreq/scaling_governor
 		write /sys/devices/system/cpu/cpu2/cpufreq/scaling_governor "interactive"
-		chmod 444 /sys/devices/system/cpu/cpu2/cpufreq/scaling_governor
+#		chmod 444 /sys/devices/system/cpu/cpu2/cpufreq/scaling_governor
 		# Temporarily change permissions to governor files for the Big cluster to raise minimum frequency to 480MHz
-		chmod 644 /sys/devices/system/cpu/cpu2/cpufreq/scaling_min_freq
+#		chmod 644 /sys/devices/system/cpu/cpu2/cpufreq/scaling_min_freq
 		# Core 2 Minimum Frequency = 480MHz
-		write /sys/devices/system/cpu/cpu2/cpufreq/scaling_min_freq 480000		
-		chmod 444 /sys/devices/system/cpu/cpu2/cpufreq/scaling_min_freq
+#		write /sys/devices/system/cpu/cpu2/cpufreq/scaling_min_freq 480000		
+#		chmod 444 /sys/devices/system/cpu/cpu2/cpufreq/scaling_min_freq
 			# Online Core 2
 		write /sys/devices/system/cpu/cpu2/online 1 		
     
-    chmod 644 /sys/devices/system/cpu/cpu2/cpufreq/scaling_max_freq
-    chmod 444 /sys/devices/system/cpu/cpu2/cpufreq/scaling_max_freq 
-    # Core 4 Maximum Frequency = 2342MHz	
-		write /sys/devices/system/cpu/cpu2/cpufreq/scaling_max_freq 2342400
+#    chmod 644 /sys/devices/system/cpu/cpu2/cpufreq/scaling_max_freq
+     # Core 4 Maximum Frequency = 2342MHz	
+		write /sys/devices/system/cpu/cpu2/cpufreq/scaling_max_freq 2150400
+#    chmod 444 /sys/devices/system/cpu/cpu2/cpufreq/scaling_max_freq 
 		# Set overclock max frequency compatible target_loads	
 		write /sys/devices/system/cpu/cpu2/cpufreq/interactive/target_loads "72 460800:65 614400:73 825600:64 979200:98 1132800:68 1286400:72 1593600:80 1824000:85 1977600:85 2150400:92 2246400:95 2342400:100"
     
@@ -169,7 +169,7 @@ on property:sys.boot_completed=1
   # Input boost configuration
     write /sys/kernel/cpu_input_boost/ib_freqs "1190400 1190400"
     write /sys/kernel/cpu_input_boost/ib_duration_ms 500
-    write /sys/kernel/cpu_input_boost/enabled 1
+    write /sys/kernel/cpu_input_boost/enabled 0
     
     # Set thermal restrictions  
     write /sys/kernel/msm_thermal/enabled 0

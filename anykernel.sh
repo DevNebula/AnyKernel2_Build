@@ -9,7 +9,7 @@ do.initd=1
 do.modules=0
 do.cleanup=1
 do.fix_pnpmgr=0
-do.pnpmgr=1
+do.pnpmgr=2
 do.fix_pnpmgr_ramdisk=0
 do.boost_scripts=0
 do.cmdlinestr=0
@@ -42,7 +42,6 @@ dump_boot;
 # begin ramdisk changes
 
 insert_line init.rc "import /init.nebula.rc" after "import /init.power.rc" "import /init.nebula.rc";
-
 
 # end ramdisk changes
 

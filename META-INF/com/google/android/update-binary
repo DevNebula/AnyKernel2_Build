@@ -93,29 +93,34 @@ if [ "$(file_getprop /tmp/anykernel/anykernel.sh do.pnpmgr)" == 1 ]; then
   				mv /system/bin/pnpmgr /system/bin/pnpmgr.bak;
   				ui_print "[PNPMGR] Renamed system/bin/pnpmgr";
   			else
-  				ui_print "[PNPMGR] Already Backed up..";
+  				ui_print "[PNPMGR] pnpmgr: Already Backed up..";
   			fi;  	
   			if [ -e /system/etc/pnp.xml ]; then
   				mv /system/etc/pnp.xml /system/etc/pnp.xml.bak;
   				ui_print "[PNPMGR] Renamed system/bin/pnp.xml";
   			else
-  				ui_print "[PNPMGR] Already Backed up..";
+  				ui_print "[PNPMGR] pnp.xml: Already Backed up..";
   			fi;
   		mount -o remount,ro -t auto /system;
 fi;
 
-
 if [ "$(file_getprop /tmp/anykernel/anykernel.sh do.pnpmgr)" == 2 ]; then
-  ui_print "[PNPMGR] Returning pnpmgr back to stock:";
-  ui_print " ";
-  mount -o remount,rw -t auto /system;
-  if [ -e /system/bin/pnpmgr.bak ]; then
-  	mv /system/bin/pnpmgr.bak /system/bin/pnpmgr;
-  	mv /system/etc/pnp.xml.bak /system/etc/pnp.xml;
-	else
-	  ui_print "[PNPMGR] No Action Needed:";
-  fi;
-  mount -o remount,ro -t auto /system;
+ 	 		ui_print "[PNPMGR] Fix For Standard Edition..";
+  		ui_print " ";
+ 		 	mount -o remount,rw -t auto /system;
+  			if [ -e /system/bin/pnpmgr.bak ]; then
+  				mv /system/bin/pnpmgr.bak /system/bin/pnpmgr;
+  				ui_print "[PNPMGR] Renamed system/bin/pnpmgr.bak";
+  			else
+  				ui_print "[PNPMGR] pnpmgr: Already Fixed..";
+  			fi;  	
+  			if [ -e /system/etc/pnp.xml.bak ]; then
+  				mv /system/etc/pnp.xml.bak /system/etc/pnp.xml;
+  				ui_print "[PNPMGR] Renamed system/bin/pnp.xml.bak";
+  			else
+  				ui_print "[PNPMGR] pnp.xml: Already Fixed..";
+  			fi;
+  		mount -o remount,ro -t auto /system;
 fi;
 
 ui_print "Installing kernel...";
@@ -129,7 +134,6 @@ PATH="/tmp/anykernel/bin:$PATH" $bb ash /tmp/anykernel/anykernel.sh $2;
 if [ $? != "0" ]; then
   abort;
 fi;
-
 
 if [ "$(file_getprop /tmp/anykernel/anykernel.sh do.modules)" == 1 ]; then
   ui_print " ";
