@@ -8,25 +8,51 @@
 ###################################################
 
 on boot
-    # Update foreground and background cpusets
+    # update cpusets now that processors are up
+    write /dev/cpuset/top-app/cpus 0-3
     write /dev/cpuset/foreground/cpus 0-3
-    write /dev/cpuset/foreground/boost/cpus 2-3
-    write /dev/cpuset/background/cpus 0-1
+    write /dev/cpuset/foreground/boost/cpus 0-3
+    write /dev/cpuset/background/cpus 0-3
     write /dev/cpuset/system-background/cpus 0-3
+    # set default schedTune value for foreground/top-app (only affects EAS)
+    write /dev/stune/foreground/schedtune.prefer_idle 1
+    write /dev/stune/top-app/schedtune.boost 10
+    write /dev/stune/top-app/schedtune.prefer_idle 1
+
+    exec - root root system readproc -- /system/bin/init.foreground.sh
+	
+    # add a cpuset for the camera daemon
+    # we want all cores for camera
+    mkdir /dev/cpuset/camera-daemon
+    write /dev/cpuset/camera-daemon/cpus 0-3
+    write /dev/cpuset/camera-daemon/mems 0
+    chown system system /dev/cpuset/camera-daemon
+    chown system system /dev/cpuset/camera-daemon/tasks
+    chmod 0664 /dev/cpuset/camera-daemon/tasks
+	
+    write /proc/sys/kernel/sched_boost 1
 
     # Set light thermal restrictions while optimizing apps
     # [throttle_freq_LITTLE, throttle_freq_big, throttle_temp, unthrottle_temp]
-    write /sys/kernel/msm_thermal/zone0 "1228800 1632000 46 44"
-    write /sys/kernel/msm_thermal/zone1 "1228800 1555200 50 47"
-    write /sys/kernel/msm_thermal/zone2 "1036800 1248000 55 53"
-    write /sys/kernel/msm_thermal/zone3 "729600 729600 65 63"
-    write /sys/kernel/msm_thermal/enabled 
+    # Set normal thermal restrictions
+    write /sys/kernel/msm_thermal/enabled 0
+    write /sys/kernel/msm_thermal/zone0 "1401600 1824000 46 43"
+    write /sys/kernel/msm_thermal/zone1 "1324800 1824000 49 46"
+    write /sys/kernel/msm_thermal/zone2 "1324800 1632000 52 49"
+    write /sys/kernel/msm_thermal/zone3 "1324800 1555200 54 52"
+    write /sys/kernel/msm_thermal/zone4 "1324800 1478400 56 54"
+    write /sys/kernel/msm_thermal/zone5 "1324800 1401600 58 56"
+    write /sys/kernel/msm_thermal/zone6 "1324800 1324800 60 58"
+    write /sys/kernel/msm_thermal/zone7 "1190400 1248000 63 60"
+    write /sys/kernel/msm_thermal/zone8 "1036000 1036000 70 63"
+    write /sys/kernel/msm_thermal/sampling_ms 8000
+    write /sys/kernel/msm_thermal/enabled 1
     
     
 on enable-low-power
     # Enable Adaptive LMK
     write /sys/module/lowmemorykiller/parameters/enable_adaptive_lmk 1
-    write /sys/module/lowmemorykiller/parameters/vmpressure_file_min 
+    write /sys/module/lowmemorykiller/parameters/vmpressure_file_min 81250
     
     write /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq 1593600
     write /sys/devices/system/cpu/cpu2/cpufreq/scaling_max_freq 2150400
@@ -161,30 +187,68 @@ on enable-low-power
     write /sys/class/kgsl/kgsl-3d/max_gpuclk 624000000
     write /sys/class/devfreq/b00000.qcom,kgsl-3d0/max_freq 624000000
     write /sys/class/devfreq/b00000.qcom,kgsl-3d0/min_freq 133000000
-#    write /sys/class/devfreq/b00000.qcom,kgsl-3d0/
-#    write /sys/class/devfreq/b00000.qcom,kgsl-3d0/
+#   write /sys/class/devfreq/b00000.qcom,kgsl-3d0/
+#   write /sys/class/devfreq/b00000.qcom,kgsl-3d0/
 
 on property:sys.boot_completed=1
+
+    write /proc/sys/kernel/sched_boost 0
+    # update cpusets now that boot is complete and we want better load balancing
+    write /dev/cpuset/top-app/cpus 0-3
+    write /dev/cpuset/foreground/boost/cpus 0-2 
+    write /dev/cpuset/foreground/cpus 0-2
+    write /dev/cpuset/background/cpus 0
+    write /dev/cpuset/system-background/cpus 0-2
+
 
   # Input boost configuration
     write /sys/kernel/cpu_input_boost/ib_freqs "1190400 1190400"
     write /sys/kernel/cpu_input_boost/ib_duration_ms 500
     write /sys/kernel/cpu_input_boost/enabled 0
     
-    # Set thermal restrictions  
+    # Set normal thermal restrictions
     write /sys/kernel/msm_thermal/enabled 0
-    write /sys/kernel/msm_thermal/zone0 "1478400 1920000 50 45"
-    write /sys/kernel/msm_thermal/zone1 "1478400 1824000 53 50"
-    write /sys/kernel/msm_thermal/zone2 "1401600 1824000 55 53"
-    write /sys/kernel/msm_thermal/zone3 "1324800 1824000 57 55"
-    write /sys/kernel/msm_thermal/zone4 "1324800 1708800 58 57"
-    write /sys/kernel/msm_thermal/zone5 "1324800 1555200 59 58"
-    write /sys/kernel/msm_thermal/zone6 "1324800 1324800 60 59"
+    write /sys/kernel/msm_thermal/zone0 "1401600 1824000 46 43"
+    write /sys/kernel/msm_thermal/zone1 "1324800 1824000 49 46"
+    write /sys/kernel/msm_thermal/zone2 "1324800 1632000 52 49"
+    write /sys/kernel/msm_thermal/zone3 "1324800 1555200 54 52"
+    write /sys/kernel/msm_thermal/zone4 "1324800 1478400 56 54"
+    write /sys/kernel/msm_thermal/zone5 "1324800 1401600 58 56"
+    write /sys/kernel/msm_thermal/zone6 "1324800 1324800 60 58"
     write /sys/kernel/msm_thermal/zone7 "1190400 1248000 63 60"
     write /sys/kernel/msm_thermal/zone8 "1036000 1036000 70 63"
     write /sys/kernel/msm_thermal/sampling_ms 8000
     write /sys/kernel/msm_thermal/enabled 1
-    
+	
+	write /proc/sys/kernel/sched_child_runs_first 0
+	write /proc/sys/kernel/sched_cstate_aware 1
+	write /proc/sys/kernel/sched_initial_task_util 0
+	write /proc/sys/kernel/sched_is_big_little 1
+	write /proc/sys/kernel/sched_latency_ns 10000000
+	write /proc/sys/kernel/sched_migration_cost_ns 500000
+	write /proc/sys/kernel/sched_min_granularity_ns 900000
+	write /proc/sys/kernel/sched_nr_migrate 16
+	write /proc/sys/kernel/sched_rr_timeslice_ms 10
+	write /proc/sys/kernel/sched_rt_period_us 1000000
+	write /proc/sys/kernel/sched_rt_runtime_us 950000
+	write /proc/sys/kernel/sched_shares_window_ns 10000000
+	write /proc/sys/kernel/sched_sync_hint_enable 1
+	write /proc/sys/kernel/sched_time_avg_ms 1000
+	write /proc/sys/kernel/sched_tunable_scaling 0
+	write /proc/sys/kernel/sched_use_walt_cpu_util 1
+	write /proc/sys/kernel/sched_use_walt_task_util 1
+	write /proc/sys/kernel/sched_wakeup_granularity_ns 100000
+	write /proc/sys/kernel/sched_walt_cpu_high_irqload 10000000
+	write /proc/sys/kernel/sched_walt_init_task_load_pct 10
+	write /proc/sys/kernel/sched_autogroup_enabled 1
+	
+	chown system /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+	chown system /sys/devices/system/cpu/cpu2/cpufreq/scaling_governor
+	# if EAS is present, switch to sched governor (no effect if not EAS)
+	write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor "sched"
+	write /sys/devices/system/cpu/cpu2/cpufreq/scaling_governor "sched"
+	write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor "sched"
+	write /sys/devices/system/cpu/cpu2/cpufreq/scaling_governor "sched"
 	
 on property:sys.boot_completed=1
     trigger enable-low-power
@@ -222,23 +286,23 @@ on property:sys.perf.profile=1
     
     # Set normal performance settings
     write /sys/kernel/msm_thermal/user_maxfreq 0
-    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor "interactive"
-    write /sys/devices/system/cpu/cpu2/cpufreq/scaling_governor "interactive"
+    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor "sched"
+    write /sys/devices/system/cpu/cpu2/cpufreq/scaling_governor "sched"
 
     write /sys/class/devfreq/soc:qcom,cpubw/governor "bw_hwmon"
     write /sys/class/kgsl/kgsl-3d0/devfreq/governor "msm-adreno-tz"
 
     # Set normal thermal restrictions
     write /sys/kernel/msm_thermal/enabled 0
-    write /sys/kernel/msm_thermal/zone0 "1401600 1785600 40 38"
-    write /sys/kernel/msm_thermal/zone1 "1324800 1555200 41 40"
-    write /sys/kernel/msm_thermal/zone2 "1228800 1478400 42 41"
-    write /sys/kernel/msm_thermal/zone3 "1228800 1401600 43 42"
-    write /sys/kernel/msm_thermal/zone4 "1190400 1324800 44 43"
-    write /sys/kernel/msm_thermal/zone5 "1190400 1248000 46 44"
-    write /sys/kernel/msm_thermal/zone6 "1113600 1190400 48 46"
-    write /sys/kernel/msm_thermal/zone7 "1036800 940800 53 50"
-    write /sys/kernel/msm_thermal/zone8 "729600 729600 65 60"
+    write /sys/kernel/msm_thermal/zone0 "1401600 1824000 46 43"
+    write /sys/kernel/msm_thermal/zone1 "1324800 1824000 49 46"
+    write /sys/kernel/msm_thermal/zone2 "1324800 1632000 52 49"
+    write /sys/kernel/msm_thermal/zone3 "1324800 1555200 54 52"
+    write /sys/kernel/msm_thermal/zone4 "1324800 1478400 56 54"
+    write /sys/kernel/msm_thermal/zone5 "1324800 1401600 58 56"
+    write /sys/kernel/msm_thermal/zone6 "1324800 1324800 60 58"
+    write /sys/kernel/msm_thermal/zone7 "1190400 1248000 63 60"
+    write /sys/kernel/msm_thermal/zone8 "1036000 1036000 70 63"
     write /sys/kernel/msm_thermal/sampling_ms 8000
     write /sys/kernel/msm_thermal/enabled 1
 
