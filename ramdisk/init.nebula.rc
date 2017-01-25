@@ -1,22 +1,28 @@
 ###################################################
 ## init.nebula.rc file (C) 2016 By @Eliminater74 ##
 ##                                               ##
-## Updated: 01/16/2017                           ##
+## Updated: 01/24/2017                           ##
 ##                                               ##
 ## Special Settings By: @Freak07                 ##
 ##                                               ##
 ###################################################
 
 on boot
+    write /dev/kmsg "[Nebula] Boot Started "
+		
     # update cpusets now that processors are up
     write /dev/cpuset/top-app/cpus 0-3
-    write /dev/cpuset/foreground/cpus 0-3
-    write /dev/cpuset/foreground/boost/cpus 0-3
-    write /dev/cpuset/background/cpus 0-3
-    write /dev/cpuset/system-background/cpus 0-3
+    write /dev/cpuset/foreground/cpus 0-2
+    write /dev/cpuset/foreground/boost/cpus 0-2
+    write /dev/cpuset/background/cpus 0
+    write /dev/cpuset/system-background/cpus 0-1
     # set default schedTune value for foreground/top-app (only affects EAS)
+    write /dev/stune/schedtune.boost 2
+    write /dev/stune/schedtune.prefer_idle 1
+    write /dev/stune/background/schedtune.prefer_idle 1
     write /dev/stune/foreground/schedtune.prefer_idle 1
-    write /dev/stune/top-app/schedtune.boost 10
+    write /dev/stune/foreground/schedtune.boost 1
+    write /dev/stune/top-app/schedtune.boost 50
     write /dev/stune/top-app/schedtune.prefer_idle 1
 
     exec - root root system readproc -- /system/bin/init.foreground.sh
@@ -35,6 +41,7 @@ on boot
     # Set light thermal restrictions while optimizing apps
     # [throttle_freq_LITTLE, throttle_freq_big, throttle_temp, unthrottle_temp]
     # Set normal thermal restrictions
+    write /dev/kmsg "[Nebula] Simple_Thermal_Monitor Config: On-Boot: "
     write /sys/kernel/msm_thermal/enabled 0
     write /sys/kernel/msm_thermal/zone0 "1401600 1824000 46 43"
     write /sys/kernel/msm_thermal/zone1 "1324800 1824000 49 46"
@@ -50,6 +57,8 @@ on boot
     
     
 on enable-low-power
+    write /dev/kmsg "[Nebula] Enabled-low-power mod: "
+	
     # Enable Adaptive LMK
     write /sys/module/lowmemorykiller/parameters/enable_adaptive_lmk 1
     write /sys/module/lowmemorykiller/parameters/vmpressure_file_min 81250
@@ -152,38 +161,9 @@ on enable-low-power
 		write /sys/devices/system/cpu/cpu2/cpufreq/interactive/use_migration_notif 1
 		write /sys/devices/system/cpu/cpu2/cpufreq/interactive/use_sched_load 0
 		write /sys/devices/system/cpu/cpu2/cpufreq/interactive/boostpulse_duration 0
-    
-    #Enable Input Boost for LITTLE cluster @537MHz for 40ms
-		write /sys/module/cpu_boost/parameters/input_boost_enabled 1
-		write /sys/module/cpu_boost/parameters/input_boost_freq "0:537600 1:537600 2:0 3:0"
-		write /sys/module/cpu_boost/parameters/boost_ms 0
-		write /sys/module/cpu_boost/parameters/input_boost_ms 40
-		#Disable TouchBoost
-		write /sys/module/msm_performance/parameters/touchboost 0
-		# Disabling BCL and Removing Perfd
-		write /sys/devices/soc.0/qcom,bcl.60/mode "disable"
-    
-	# Tweaking HMP Scheduler for increased Big Cluster utilization
-		write /proc/sys/kernel/sched_window_stats_policy 2
-		write /proc/sys/kernel/sched_ravg_hist_size 5
-		write /proc/sys/kernel/sched_upmigrate_min_nice 15
-		write /proc/sys/kernel/sched_spill_nr_run 2
-		write /proc/sys/kernel/sched_spill_load 100
-		write /proc/sys/kernel/sched_downmigrate 50
-		write /proc/sys/kernel/sched_upmigrate 60
-		
-		write /sys/devices/system/cpu/cpu0/core_ctl/disable 1
-		write /sys/devices/system/cpu/cpu0/core_ctl/max_cpus 2
-		write /sys/devices/system/cpu/cpu0/core_ctl/min_cpus 2
-		write /sys/devices/system/cpu/cpu2/core_ctl/disable 1
-		write /sys/devices/system/cpu/cpu2/core_ctl/max_cpus 2
-		write /sys/devices/system/cpu/cpu02/core_ctl/min_cpus 2
-		write /sys/devices/system/cpu/cpu0/online 1
-		write /sys/devices/system/cpu/cpu1/online 1
-		write /sys/devices/system/cpu/cpu2/online 1
-		write /sys/devices/system/cpu/cpu3/online 1
     	
-  # Graphics Settings. Make sure we start at 624mhz(Default)  	
+  # Graphics Settings. Make sure we start at 624mhz(Default)  
+  	write /dev/kmsg "[Nebula] GPU: set default freq level of 624mhz: "	
     write /sys/class/kgsl/kgsl-3d/max_gpuclk 624000000
     write /sys/class/devfreq/b00000.qcom,kgsl-3d0/max_freq 624000000
     write /sys/class/devfreq/b00000.qcom,kgsl-3d0/min_freq 133000000
@@ -191,6 +171,7 @@ on enable-low-power
 #   write /sys/class/devfreq/b00000.qcom,kgsl-3d0/
 
 on property:sys.boot_completed=1
+    write /dev/kmsg "[Nebula] Boot Completed "
 
     write /proc/sys/kernel/sched_boost 0
     # update cpusets now that boot is complete and we want better load balancing
@@ -202,11 +183,13 @@ on property:sys.boot_completed=1
 
 
   # Input boost configuration
+    write /dev/kmsg "[Nebula] cpu_input_boost Settings: "
     write /sys/kernel/cpu_input_boost/ib_freqs "1190400 1190400"
     write /sys/kernel/cpu_input_boost/ib_duration_ms 500
     write /sys/kernel/cpu_input_boost/enabled 0
     
     # Set normal thermal restrictions
+    write /dev/kmsg "[Nebula] simple_thermal_monitor Settings: "
     write /sys/kernel/msm_thermal/enabled 0
     write /sys/kernel/msm_thermal/zone0 "1401600 1824000 46 43"
     write /sys/kernel/msm_thermal/zone1 "1324800 1824000 49 46"
@@ -250,6 +233,7 @@ on property:sys.boot_completed=1
 	write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor "sched"
 	write /sys/devices/system/cpu/cpu2/cpufreq/scaling_governor "sched"
 	
+	
 on property:sys.boot_completed=1
     trigger enable-low-power
 
@@ -257,6 +241,8 @@ on property:init.svc.recovery=running
     trigger enable-low-power
     
 on property:sys.perf.profile=0
+    write /dev/kmsg "[Nebula] sys.perf.profile=0 "
+	
     # Set low-power performance settings
     write /sys/kernel/msm_thermal/user_maxfreq 1036800
     write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor "conservative"
@@ -280,6 +266,7 @@ on property:sys.perf.profile=0
     write /sys/kernel/msm_thermal/enabled 1
 
 on property:sys.perf.profile=1
+     write /dev/kmsg "[Nebula] sys.perf.profile=1 "
 	
 #    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq 1593600
 #    write /sys/devices/system/cpu/cpu2/cpufreq/scaling_max_freq 2150400
@@ -307,6 +294,8 @@ on property:sys.perf.profile=1
     write /sys/kernel/msm_thermal/enabled 1
 
 on property:sys.perf.profile=2
+		write /dev/kmsg "[Nebula] sys.perf.profile=2 "
+	
     # Set high performance settings
     # Keep little cluster at maxfreq
     write /sys/kernel/msm_thermal/user_maxfreq 0

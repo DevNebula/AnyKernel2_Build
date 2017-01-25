@@ -67,6 +67,11 @@ remove_section init.power.rc "service pnpmgr" "root";
 remove_section init.power.rc "thermal-engine=stopped" "little/cpu3/thermal_freq"
 remove_section init.rc "# Reload policy from /data/security if present." "setprop selinux.reload_policy 1"
 
+replace_line init.zygote64_32.rc "    writepid /dev/cpuset/foreground/tasks /sys/fs/cgroup/stune/foreground/tasks" "    writepid /dev/cpuset/foreground/tasks /dev/stune/foreground/tasks"
+#insert_line init.zygote64_32.rc "    priority -20" after "    class main" "    priority -20"
+#insert_line init.zygote64_32.rc "    priority -20" before "    socket zygote_secondary stream 660 root system" "    priority -20"
+replace_line init.zygote32.rc "    writepid /dev/cpuset/foreground/tasks /dev/stune/foreground/tasks" "    writepid /dev/cpuset/foreground/tasks"
+#insert_line init.zygote32.rc "    priority -20" after "    class main" "    priority -20"
 
 # end ramdisk changes
 
