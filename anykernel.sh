@@ -42,8 +42,9 @@ dump_boot;
 
 # begin ramdisk changes
 
+#### Ramdisk Changes For EAS Kernel Only. Stock Based Mostly ####
+
 insert_line init.rc "import /init.nebula.rc" after "import /init.power.rc" "import /init.nebula.rc";
-insert_line init.rc "    seclabel u:r:init:s0" after "service usbdiag_init  /system/bin/sh /init.usbdiag.sh" "    seclabel u:r:init:s0"
 insert_line init.rc "    mkdir /dev/stune/background" after "    mount cgroup none /dev/stune schedtune" "    mkdir /dev/stune/background"
 insert_line init.rc "    mkdir /dev/stune/top-app" after "    mkdir /dev/stune/foreground" "    mkdir /dev/stune/top-app"
 insert_line init.rc "    chown system system /dev/stune/background" after "    chown system system /dev/stune" "    chown system system /dev/stune/background"
@@ -52,14 +53,12 @@ insert_line init.rc "    chown system system /dev/stune/background/tasks" after 
 insert_line init.rc "    chown system system /dev/stune/top-app/tasks" after "    chown system system /dev/stune/foreground/tasks" "    chown system system /dev/stune/top-app/tasks"
 insert_line init.rc "    chmod 0664 /dev/stune/background/tasks" after "    chmod 0664 /dev/stune/tasks" "    chmod 0664 /dev/stune/background/tasks"
 insert_line init.rc "    chmod 0664 /dev/stune/top-app/tasks" after "    chmod 0664 /dev/stune/foreground/tasks" "    chmod 0664 /dev/stune/top-app/tasks"
-insert_line init.rc "    seclabel u:r:init:s0" after "service network_init  /system/bin/sh /init.network.sh" "    seclabel u:r:init:s0"
+insert_line init.rc "    seclabel u:r:init:s0" before "    class main" "    seclabel u:r:init:s0"
+insert_line init.rc "    seclabel u:r:init:s0" after "service usbdiag_init  /system/bin/sh /init.usbdiag.sh" "    seclabel u:r:init:s0"
 insert_line init.rc "    mkdir" after "    mkdir" "    mkdir"
 insert_line init.power.rc "    seclabel u:r:init:s0" after "service setfps /system/bin/sh /system/etc/setfps.sh" "    seclabel u:r:init:s0"
 insert_line init.power.rc "    seclabel u:r:init:s0" after "service setFOTA /system/bin/sh /system/etc/setFOTAfreq.sh" "    seclabel u:r:init:s0"
-insert_line init.rc "    mkdir" after "    mkdir" "    mkdir"
-insert_line init.rc "    mkdir" after "    mkdir" "    mkdir"
 
-backup_file init.power.rc
 remove_section init.power.rc "#CPUSET" "top-app/cpus";
 remove_section init.power.rc "# init PnPMgr node" "200";
 remove_section init.power.rc "property:init.svc.thermal-engine=stopped" "/sys/power/pnpmgr/cluster/little/cpu3/thermal_freq";
@@ -68,10 +67,10 @@ remove_section init.power.rc "thermal-engine=stopped" "little/cpu3/thermal_freq"
 remove_section init.rc "# Reload policy from /data/security if present." "setprop selinux.reload_policy 1"
 
 replace_line init.zygote64_32.rc "    writepid /dev/cpuset/foreground/tasks /sys/fs/cgroup/stune/foreground/tasks" "    writepid /dev/cpuset/foreground/tasks /dev/stune/foreground/tasks"
-#insert_line init.zygote64_32.rc "    priority -20" after "    class main" "    priority -20"
-#insert_line init.zygote64_32.rc "    priority -20" before "    socket zygote_secondary stream 660 root system" "    priority -20"
 replace_line init.zygote32.rc "    writepid /dev/cpuset/foreground/tasks /dev/stune/foreground/tasks" "    writepid /dev/cpuset/foreground/tasks"
-#insert_line init.zygote32.rc "    priority -20" after "    class main" "    priority -20"
+### Stop texfat from starting at this level ###
+remove_line init.htc.storage.exfat.rc "    insmod /system/lib/modules/texfat.ko"
+
 
 # end ramdisk changes
 
