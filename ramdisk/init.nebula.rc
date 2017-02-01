@@ -1,7 +1,10 @@
 ###################################################
-## init.nebula.rc file (C) 2016 By @Eliminater74 ##
+## init.nebula.rc file (C) 2017 By @Eliminater74 ##
 ##                                               ##
-## Updated: 01/27/2017                           ##
+## Updated: 02/01/2017                           ##
+##                                               ##
+## Update Tweak By: @Freal07                     ##
+##                                               ##
 ##                                               ##
 ## Special Settings By: @Freak07                 ##
 ##                                               ##
@@ -19,8 +22,8 @@ on boot
     # set default schedTune value for foreground/top-app (only affects EAS)
     chmod 0664 /dev/stune/schedtune.boost
     write /dev/stune/schedtune.boost 2
-    write /dev/stune/schedtune.prefer_idle 1
-    write /dev/stune/background/schedtune.prefer_idle 1
+    write /dev/stune/schedtune.prefer_idle 0
+    write /dev/stune/background/schedtune.prefer_idle 0
     write /dev/stune/foreground/schedtune.prefer_idle 1
     write /dev/stune/foreground/schedtune.boost 2
     write /dev/stune/top-app/schedtune.boost 50
@@ -193,9 +196,9 @@ on property:sys.boot_completed=1
 		write /proc/sys/kernel/sched_is_big_little 0
 		write /proc/sys/kernel/sched_latency_ns 10000000
 		write /proc/sys/kernel/sched_migration_cost_ns 500000
-		write /proc/sys/kernel/sched_min_granularity_ns 900000
-		write /proc/sys/kernel/sched_nr_migrate 16
-		write /proc/sys/kernel/sched_rr_timeslice_ms 10
+		write /proc/sys/kernel/sched_min_granularity_ns 2250000
+		write /proc/sys/kernel/sched_nr_migrate 32
+		write /proc/sys/kernel/sched_rr_timeslice_ms 100
 		write /proc/sys/kernel/sched_rt_period_us 1000000
 		write /proc/sys/kernel/sched_rt_runtime_us 950000
 		write /proc/sys/kernel/sched_shares_window_ns 10000000
@@ -204,9 +207,9 @@ on property:sys.boot_completed=1
 		write /proc/sys/kernel/sched_tunable_scaling 0
 		write /proc/sys/kernel/sched_use_walt_cpu_util 1
 		write /proc/sys/kernel/sched_use_walt_task_util 1
-		write /proc/sys/kernel/sched_wakeup_granularity_ns 100000
+		write /proc/sys/kernel/sched_wakeup_granularity_ns 200000
 		write /proc/sys/kernel/sched_walt_cpu_high_irqload 10000000
-		write /proc/sys/kernel/sched_walt_init_task_load_pct 10
+		write /proc/sys/kernel/sched_walt_init_task_load_pct 15
 	
 	
 on property:sys.boot_completed=1
