@@ -221,7 +221,7 @@ fi;
 
 umount /system;
 umount /data;
-ui_print "                     _\|/_                     ";
+ui_print "                     _\|/_                    ";
 ui_print "                     (o o)                     ";
 ui_print "+-----------------oOO-(_)-OOo-----------------+";
 ui_print "|         Device: HTC10                       |";

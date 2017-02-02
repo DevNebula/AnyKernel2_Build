@@ -55,7 +55,6 @@ insert_line init.rc "    chmod 0664 /dev/stune/background/tasks" after "    chmo
 insert_line init.rc "    chmod 0664 /dev/stune/top-app/tasks" after "    chmod 0664 /dev/stune/foreground/tasks" "    chmod 0664 /dev/stune/top-app/tasks"
 insert_line init.rc "    seclabel u:r:init:s0" before "    class main" "    seclabel u:r:init:s0"
 insert_line init.rc "    seclabel u:r:init:s0" after "service usbdiag_init  /system/bin/sh /init.usbdiag.sh" "    seclabel u:r:init:s0"
-insert_line init.rc "    mkdir" after "    mkdir" "    mkdir"
 insert_line init.power.rc "    seclabel u:r:init:s0" after "service setfps /system/bin/sh /system/etc/setfps.sh" "    seclabel u:r:init:s0"
 insert_line init.power.rc "    seclabel u:r:init:s0" after "service setFOTA /system/bin/sh /system/etc/setFOTAfreq.sh" "    seclabel u:r:init:s0"
 
