@@ -23,18 +23,24 @@ set_perm_recursive() {
 }
 ## Acsii Art/Text has a Max width of 53 chars ##
 ##       "12345678901234567890123456789012345678901234567890123"; Max Width##
-ui_print " __   _ _______ ______  _     _        _______";
-ui_print " | \  | |______ |_____] |     | |      |_____|";
-ui_print " |  \_| |______ |_____] |_____| |_____ |     |";
+ui_print "_____   __    ______        ______            ";
+ui_print "___  | / /_______  /_____  ____  /_____ _     ";
+ui_print "__   |/ /_  _ \_  __ \  / / /_  /_  __ \`/     ";
+ui_print "_  /|  / /  __/  /_/ / /_/ /_  / / /_/ /      ";
+ui_print "/_/ |_/  \___//_.___/\__,_/ /_/  \__,_/       ";
 ui_print "                                              ";
-ui_print "  ______ _____ _______ _______ _______        ";
-ui_print " |_____/   |   |______ |______ |______        ";
-ui_print " |    \_ __|__ ______| |______ ______|        ";
+ui_print "____________       ___________                ";
+ui_print "__  ___/_  /__________(_)__  /______________  ";
+ui_print "_____ \_  __/_  ___/_  /__  //_/  _ \_  ___/  ";
+ui_print "____/ // /_ _  /   _  / _  ,<  /  __/(__  )   ";
+ui_print "/____/ \__/ /_/    /_/  /_/|_| \___//____/    ";
 ui_print "                                              ";
-ui_print " _______  ______ _______ _____ __   _         ";
-ui_print " |_____| |  ____ |_____|   |   | \  |         ";
-ui_print " |     | |_____| |     | __|__ |  \_|         ";
-ui_print "                                              ";
+ui_print "           _______               _____        ";
+ui_print "           ___    |______ ______ ___(_)______ ";
+ui_print "           __  /| |_  __ \`/  __ \`/_  /__  __ \ ";
+ui_print "           _  ___ |  /_/ // /_/ /_  / _  / / /";
+ui_print "           /_/  |_|\__, / \__,_/ /_/  /_/ /_/ ";
+ui_print "                  /____/                      ";
 
 
 file_getprop() { grep "^$2" "$1" | cut -d= -f2; }
@@ -125,7 +131,7 @@ if [ "$(file_getprop /tmp/anykernel/anykernel.sh do.pnpmgr)" == 2 ]; then
   		mount -o remount,ro -t auto /system;
 fi;
 
-ui_print "Installing kernel...";
+ui_print "[Nebula] Installing Kernel, Please wait...";
 for i in $($bb --list); do
   $bb ln -s $bb /tmp/anykernel/bin/$i;
 done;
@@ -147,14 +153,15 @@ if [ "$(file_getprop /tmp/anykernel/anykernel.sh do.modules)" == 1 ]; then
 fi;
 
 if [ "$(file_getprop /tmp/anykernel/anykernel.sh do.eas_support)" == 1 ]; then
-		ui_print "Installing EAS ROM Support...";
+		ui_print "[Nebula] EAS Support: Rom Detection in progress,";
+		ui_print "[Nebula] Please Wait.."
 			ui_print " ";
 			mount -o remount,rw -t auto /system;
 				if [ -e /system/etc/init.qcom.post_boot.sh ]; then
 					ui_print "[EAS] Disable: init.qcom.post_boot.sh ";
 					mv /system/etc/init.qcom.post_boot.sh init.qcom.post_boot.sh.bak;
 				fi
-					if (( ! $(grep -c "ro.build.flavor=lineage_pme-userdebug" /system/build.prop) == 1 )) ; then
+					if grep -qi  'htc_pmewl-user\|htc_pmeuhl-user\|htc_pmewhl-user' /system/build.prop; then
 						ui_print "[EAS] Stock Based Rom Detected: ";
 						cp -rf /tmp/anykernel/system/* /system/;
 						chmod 0644 /system/lib/libcutils.so;
@@ -214,13 +221,15 @@ fi;
 
 umount /system;
 umount /data;
-ui_print "                      ''~``                        ";
-ui_print "                      ( o o )                      ";
-ui_print "+----------------.oooO--(_)--Oooo.----------------+";
-ui_print "| [HTC10]    Codded By @Eliminater74    [Kernel]  |";
-ui_print "|                  .oooO                          |";
-ui_print "|  Nebula          (   )   Oooo.     Returns      |";
-ui_print "+-------------------\ (----(   )------------------+";
-ui_print "                     \_)    ) /                    ";
-ui_print "                           (_/                     ";
-
+ui_print "                     _\|/_                     ";
+ui_print "                     (o o)                     ";
+ui_print "+-----------------oOO-(_)-OOo-----------------+";
+ui_print "|         Device: HTC10                       |";
+ui_print "|         Kernel: EAS Edition                 |";
+ui_print "|         Update: 02/01/2017                  |";
+ui_print "|                                             |";
+ui_print "|     Developed By,                           |";
+ui_print "|              XDA: Eliminater74              |";
+ui_print "|       E-mail: eliminater74@gmail.com        |";
+ui_print "+---------------------------------------------+";
+ui_print "                    (_| |_)                    ";
