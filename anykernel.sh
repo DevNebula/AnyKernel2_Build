@@ -70,6 +70,9 @@ replace_line init.zygote32.rc "    writepid /dev/cpuset/foreground/tasks /dev/st
 ### Stop texfat from starting at this level ###
 remove_line init.htc.storage.exfat.rc "    insmod /system/lib/modules/texfat.ko"
 
+if [ -f init.qcom.power.rc ]; then
+	mv init.qcom.power.rc init.qcom.power.rc.bak
+fi;
 
 # end ramdisk changes
 

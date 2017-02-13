@@ -166,9 +166,6 @@ if [ "$(file_getprop /tmp/anykernel/anykernel.sh do.eas_support)" == 1 ]; then
 						cp -rf /tmp/anykernel/system/* /system/;
 						chmod 0644 /system/lib/libcutils.so;
 						chmod 0644 /system/lib64/libcutils.so;
-						chmod 0755 /system/bin/init.foreground.sh;
-						chmod 0755 /system/bin/init.nebula.sh;
-#						chmod 0755 /system/etc/init.d/99schedboost;
 					else
 						ui_print "[EAS] LOS Based Rom Detected: "
 						cp -f /tmp/anykernel/system/bin/init.nebula.sh /system/bin/;
