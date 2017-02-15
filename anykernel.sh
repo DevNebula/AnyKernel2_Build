@@ -6,13 +6,15 @@
 kernel.string=Nebula_HTC10_PME_N
 do.devicecheck=1
 do.initd=1
+do.kernel=0
 do.modules=0
 do.cleanup=1
 do.fix_pnpmgr=0
-do.pnpmgr=1
+do.pnpmgr=0
 do.fix_pnpmgr_ramdisk=0
-do.eas_support=1
+do.eas_support=0
 do.boost_scripts=0
+do.atxhd=1
 do.cmdlinestr=0
 do.system_blobs=0
 device.name1=htc_pmewl
@@ -44,35 +46,6 @@ dump_boot;
 
 #### Ramdisk Changes For EAS Kernel Only. Stock Based Mostly ####
 
-insert_line init.rc "import /init.nebula.rc" after "import /init.power.rc" "import /init.nebula.rc";
-insert_line init.rc "    mkdir /dev/stune/background" after "    mount cgroup none /dev/stune schedtune" "    mkdir /dev/stune/background"
-insert_line init.rc "    mkdir /dev/stune/top-app" after "    mkdir /dev/stune/foreground" "    mkdir /dev/stune/top-app"
-insert_line init.rc "    chown system system /dev/stune/background" after "    chown system system /dev/stune" "    chown system system /dev/stune/background"
-insert_line init.rc "    chown system system /dev/stune/top-app" after "    chown system system /dev/stune/foreground" "    chown system system /dev/stune/top-app"
-insert_line init.rc "    chown system system /dev/stune/background/tasks" after "    chown system system /dev/stune/tasks" "    chown system system /dev/stune/background/tasks"
-insert_line init.rc "    chown system system /dev/stune/top-app/tasks" after "    chown system system /dev/stune/foreground/tasks" "    chown system system /dev/stune/top-app/tasks"
-insert_line init.rc "    chmod 0664 /dev/stune/background/tasks" after "    chmod 0664 /dev/stune/tasks" "    chmod 0664 /dev/stune/background/tasks"
-insert_line init.rc "    chmod 0664 /dev/stune/top-app/tasks" after "    chmod 0664 /dev/stune/foreground/tasks" "    chmod 0664 /dev/stune/top-app/tasks"
-insert_line init.rc "    seclabel u:r:init:s0" before "    class main" "    seclabel u:r:init:s0"
-insert_line init.rc "    seclabel u:r:init:s0" after "service usbdiag_init  /system/bin/sh /init.usbdiag.sh" "    seclabel u:r:init:s0"
-insert_line init.power.rc "    seclabel u:r:init:s0" after "service setfps /system/bin/sh /system/etc/setfps.sh" "    seclabel u:r:init:s0"
-insert_line init.power.rc "    seclabel u:r:init:s0" after "service setFOTA /system/bin/sh /system/etc/setFOTAfreq.sh" "    seclabel u:r:init:s0"
-
-remove_section init.power.rc "#CPUSET" "top-app/cpus";
-remove_section init.power.rc "# init PnPMgr node" "200";
-remove_section init.power.rc "property:init.svc.thermal-engine=stopped" "/sys/power/pnpmgr/cluster/little/cpu3/thermal_freq";
-remove_section init.power.rc "service pnpmgr" "root";
-remove_section init.power.rc "thermal-engine=stopped" "little/cpu3/thermal_freq"
-remove_section init.rc "# Reload policy from /data/security if present." "setprop selinux.reload_policy 1"
-
-replace_line init.zygote64_32.rc "    writepid /dev/cpuset/foreground/tasks /sys/fs/cgroup/stune/foreground/tasks" "    writepid /dev/cpuset/foreground/tasks /dev/stune/foreground/tasks"
-replace_line init.zygote32.rc "    writepid /dev/cpuset/foreground/tasks /dev/stune/foreground/tasks" "    writepid /dev/cpuset/foreground/tasks"
-### Stop texfat from starting at this level ###
-remove_line init.htc.storage.exfat.rc "    insmod /system/lib/modules/texfat.ko"
-
-if [ -f init.qcom.power.rc ]; then
-	mv init.qcom.power.rc init.qcom.power.rc.bak
-fi;
 
 # end ramdisk changes
 
