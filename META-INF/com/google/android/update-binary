@@ -6,14 +6,9 @@ OUTFD=/proc/self/fd/$2;
 ZIP="$3";
 DIR=`dirname "$ZIP"`;
 
-default_prop=$ramdisk/default.prop;
-build_prop=/system/build.prop;
-
-found_prop=false;
-[ -f "$default_prop" ] && found_prop=true;
-
-found_build_prop=false;
-[ -f "$build_prop" ] && found_build_prop=true;
+FILE=/system/build.prop
+prop="persist.bt.enableAptXHD"
+arg="true"
 
 ui_print() {
   until [ ! "$1" ]; do
@@ -206,8 +201,19 @@ if [ "$(file_getprop /tmp/anykernel/anykernel.sh do.aptxhd)" == 1 ]; then
 				cp -rf /tmp/anykernel/system/vendor/lib/hw/* /system/vendor/lib/hw/;
 				set_perm_recursive 0 0 0744 0644 /system/vendor/lib;
 				set_perm_recursive 0 0 0755 0644 /system/vendor/lib/hw;
-				setprop "persist.bt.enableAptXHD" "true";
-				mount -o remount,ro -t auto /system;		
+				if grep -Fq $prop $FILE ; then
+				    lineNum=`busybox sed -n "/${prop}/=" $FILE`
+				    ui_print "Line: $lineNum";
+				    sed -i "${lineNum} c${prop}=${arg}" $FILE
+				    ui_print "Changed: ${prop}=${arg}";
+				    ui_print "to $prop set value $arg in build.prop"   ;
+				else
+				    ui_print "$prop does not exist in build.prop"   ;
+				    ui_print "appending to end of build.prop";
+				    echo $prop=$arg >> $FILE
+				fi;
+				mount -o remount,ro -t auto /system;
+				ui_print "[Nebula] AptXHD: NOW WORKING...";
 fi;
 
 if [ "$(file_getprop /tmp/anykernel/anykernel.sh do.boost_scripts)" == 1 ]; then
