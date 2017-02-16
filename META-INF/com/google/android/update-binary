@@ -6,6 +6,15 @@ OUTFD=/proc/self/fd/$2;
 ZIP="$3";
 DIR=`dirname "$ZIP"`;
 
+default_prop=$ramdisk/default.prop;
+build_prop=/system/build.prop;
+
+found_prop=false;
+[ -f "$default_prop" ] && found_prop=true;
+
+found_build_prop=false;
+[ -f "$build_prop" ] && found_build_prop=true;
+
 ui_print() {
   until [ ! "$1" ]; do
     echo -e "ui_print $1\nui_print" > $OUTFD;
@@ -20,6 +29,17 @@ set_perm_recursive() {
     find "$i" -type d -exec chmod $3 {} +;
     find "$i" -type f -exec chmod $4 {} +;
   done;
+}
+
+# setprop <prop> <value>
+# set a prop value in default.prop
+setprop() {
+	$found_prop || return
+	if grep -q "^[[:space:]]*$1[[:space:]]*=" "$build_prop"; then
+		sed -i "s/^[[:space:]]*$1[[:space:]]*=.*$/$1=$2/g" "$build_prop";
+	else
+		echo "$1=$2" >> "$build_prop";
+	fi;
 }
 ## Acsii Art/Text has a Max width of 53 chars ##
 ##       "12345678901234567890123456789012345678901234567890123"; Max Width##
@@ -184,8 +204,9 @@ if [ "$(file_getprop /tmp/anykernel/anykernel.sh do.aptxhd)" == 1 ]; then
 		mount -o remount,rw -t auto /system;
 				cp -rf /tmp/anykernel/system/vendor/lib/* /system/vendor/lib/;
 				cp -rf /tmp/anykernel/system/vendor/lib/hw/* /system/vendor/lib/hw/;
-				set_perm_recursive 0 0 0755 0755 /system/vendor/lib;
-				set_perm_recursive 0 0 0755 0755 /system/vendor/lib/hw;
+				set_perm_recursive 0 0 0744 0644 /system/vendor/lib;
+				set_perm_recursive 0 0 0755 0644 /system/vendor/lib/hw;
+				setprop "persist.bt.enableAptXHD" "true";
 				mount -o remount,ro -t auto /system;		
 fi;
 
