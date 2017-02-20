@@ -21,6 +21,11 @@ set_perm_recursive() {
     find "$i" -type f -exec chmod $4 {} +;
   done;
 }
+
+## AnyKernel methods (DO NOT CHANGE)
+# import patching functions/variables - see for reference
+#. /tmp/anykernel/tools/ak2-core.sh;
+
 ## Acsii Art/Text has a Max width of 53 chars ##
 ##       "12345678901234567890123456789012345678901234567890123"; Max Width##
 ui_print "_____   __    ______        ______            ";
@@ -223,7 +228,7 @@ ui_print "                     (o o)                     ";
 ui_print "+-----------------oOO-(_)-OOo-----------------+";
 ui_print "|         Device: HTC10                       |";
 ui_print "|         Kernel: EAS Edition                 |";
-ui_print "|         Update: 02/01/2017                  |";
+ui_print "|         Update: 02/29/2017                  |";
 ui_print "|                                             |";
 ui_print "|     Developed By,                           |";
 ui_print "|              XDA: Eliminater74              |";

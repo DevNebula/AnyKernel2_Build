@@ -74,6 +74,10 @@ if [ -f init.qcom.power.rc ]; then
 	mv init.qcom.power.rc init.qcom.power.rc.bak
 fi;
 
+setcmdline "androidboot.selinux" "permissive"
+setcmdline "enforcing" "0"
+setcmdline "selinux" "1"
+
 # end ramdisk changes
 
 write_boot;
