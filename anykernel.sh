@@ -57,7 +57,19 @@ insert_line init.rc "    seclabel u:r:init:s0" before "    class main" "    secl
 insert_line init.rc "    seclabel u:r:init:s0" after "service usbdiag_init  /system/bin/sh /init.usbdiag.sh" "    seclabel u:r:init:s0"
 insert_line init.power.rc "    seclabel u:r:init:s0" after "service setfps /system/bin/sh /system/etc/setfps.sh" "    seclabel u:r:init:s0"
 insert_line init.power.rc "    seclabel u:r:init:s0" after "service setFOTA /system/bin/sh /system/etc/setFOTAfreq.sh" "    seclabel u:r:init:s0"
-
+## Liness Below said to fix LOS issues with Kernel ##
+remove_line init.rc "    mkdir /dev/stune/system-background"
+remove_line init.rc "    chown system system /dev/stune/system-background"
+remove_line init.rc "    chown system system /dev/stune/system-background/tasks"
+remove_line init.rc "    chmod 0664 /dev/stune/system-background/tasks"
+remove_line init.rc "    mkdir /dev/cpu-set/system-background"
+remove_line init.rc "    write /dev/cpu-set/system-background/cpus 0"
+remove_line init.rc "    write /dev/cpu-set/system-background/mems 0"
+remove_line init.rc "    chown system system /dev/cpuset/system-background"
+remove_line init.rc "    chown system system /dev/cpuset/system-background/tasks"
+remove_line init.rc "    chmod 0775 /dev/cpuset/system-background"
+remove_line init.rc "    chmod 0664 /dev/cpuset/system-background/tasks"
+## ---------------------------------------------- ##
 remove_section init.power.rc "#CPUSET" "top-app/cpus";
 remove_section init.power.rc "# init PnPMgr node" "200";
 remove_section init.power.rc "property:init.svc.thermal-engine=stopped" "/sys/power/pnpmgr/cluster/little/cpu3/thermal_freq";
@@ -74,9 +86,9 @@ if [ -f init.qcom.power.rc ]; then
 	mv init.qcom.power.rc init.qcom.power.rc.bak
 fi;
 
-setcmdline "androidboot.selinux" "permissive"
-setcmdline "enforcing" "0"
-setcmdline "selinux" "1"
+#setcmdline "androidboot.selinux" "permissive"
+#setcmdline "enforcing" "0"
+#setcmdline "selinux" "1"
 
 # end ramdisk changes
 
@@ -108,5 +120,38 @@ write_boot;
 # replace_file <file> <permissions> <patch file>
 
 # patch_fstab <fstab file> <mount match name> <fs match type> <block|mount|fstype|options|flags> <original string> <replacement string>
+
+# seadd [-Z / -z <domain> | -s <source type>] [-t <target type>] [-c <class>] [-z <domain>] [-p <perm,list>] [-a <type attr>]
+# add a new policy rule/domain to the sepolicy
+
+# secheck [-s <source type>] [-c <class>]
+# check if a given context label or class exists in the sepolicy
+
+# import_rc <rc file>
+# adds an init rc file as an import to init.rc, it will be imported last
+
+# context_set <file path regex> <context>
+# use this to set selinux contexts of file paths
+
+# ueventd_set <device node> <permissions> <chown> <chgrp>
+# use this to set permissions of /dev nodes
+
+# remove_service <service name>
+# this comments out a service entry entirely, as well as commands referencing it
+
+# disable_service <service name>
+# this only sets a service to disabled, it won't prevent it from being started manually
+
+# delprop <prop>
+# delete a prop from both default.prop and build.prop
+
+# setprop <prop> <value>
+# set a prop value in default.prop
+
+# setcmdline <key> <value>
+# set a key's value on the boot image's initial command line
+
+# setperm <directory permissions> <file permissions> <directory>
+# recursively sets permissions of files & directories
 
 # write_boot
