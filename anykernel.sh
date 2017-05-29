@@ -2,12 +2,13 @@
 # osm0sis @ xda-developers
 
 ## AnyKernel setup
-# EDIFY properties
-kernel.string=Nebula_pme_N
+# begin properties
+properties() {
+kernel.string=Nebula: Custom EAS Kernel By @Eliminater74 For 
 do.devicecheck=1
-do.initd=1
 do.modules=0
 do.cleanup=1
+do.cleanuponabort=0
 do.fix_pnpmgr=0
 do.pnpmgr=1
 do.fix_pnpmgr_ramdisk=0
@@ -20,6 +21,7 @@ device.name2=htc_pmeuhl
 device.name3=htc_pmewhl
 device.name4=htc10
 device.name5=htc
+} # end properties
 
 # shell variables
 block=/dev/block/bootdevice/by-name/boot;
