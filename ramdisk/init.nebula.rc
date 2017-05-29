@@ -10,8 +10,11 @@
 ##                                               ##
 ###################################################
 
+on init
+     write /dev/kmsg "[Nebula] INIT: Start init section: "
+
 on boot
-    write /dev/kmsg "[Nebula] Boot Startedn\ "
+    write /dev/kmsg "[Nebula] Boot Started: "
 	
 	#freak07 start
 	# Mount cgroup mount point for cpu accounting
@@ -130,16 +133,17 @@ on boot
 	
 	#eliminater original start
     # update cpusets now that processors are up
+		# Update foreground and background cpusets
+    write /dev/cpuset/foreground/cpus 0-3
+    write /dev/cpuset/foreground/boost/cpus 0-3
+    write /dev/cpuset/background/cpus 0-3
+    write /dev/cpuset/system-background/cpus 0-3
     write /dev/cpuset/top-app/cpus 0-3
-    write /dev/cpuset/foreground/cpus 0-2
-    write /dev/cpuset/foreground/boost/cpus 0-2
-    write /dev/cpuset/background/cpus 0
-    write /dev/cpuset/system-background/cpus 0-1
     # set default schedTune value for foreground/top-app (only affects EAS)
     chmod 0664 /dev/stune/schedtune.boost
     write /dev/stune/schedtune.boost 0
-    write /dev/stune/schedtune.prefer_idle 0
-    write /dev/stune/background/schedtune.prefer_idle 0
+    write /dev/stune/schedtune.prefer_idle 1
+    write /dev/stune/background/schedtune.prefer_idle 1
     write /dev/stune/foreground/schedtune.prefer_idle 1
     write /dev/stune/foreground/schedtune.boost 0
     write /dev/stune/top-app/schedtune.boost 8
@@ -274,14 +278,14 @@ on enable-low-power
 on property:sys.boot_completed=1
     write /dev/kmsg "[Nebula] Boot Completed "
 
-    write /proc/sys/kernel/sched_boost 0
+		write /dev/kmsg "[Nebula] CPUSETS "
+		write /proc/sys/kernel/sched_boost 0
     # update cpusets now that boot is complete and we want better load balancing
     write /dev/cpuset/top-app/cpus 0-3
-    write /dev/cpuset/foreground/boost/cpus 0-2 
-    write /dev/cpuset/foreground/cpus 0-2
+    write /dev/cpuset/foreground/boost/cpus 0-1,3
+    write /dev/cpuset/foreground/cpus 0-1,3
     write /dev/cpuset/background/cpus 0
-    write /dev/cpuset/system-background/cpus 0-2
-
+    write /dev/cpuset/system-background/cpus 0-1,3
 
   # Input boost configuration
     write /dev/kmsg "[Nebula] cpu_input_boost Settings: "
@@ -333,6 +337,16 @@ on property:sys.boot_completed=1
 		write /proc/sys/vm/mmap_min_addr 32768
 		write /proc/sys/net/ipv4/ping_group_range "0 2147483647"
 		write /proc/sys/net/unix/max_dgram_qlen 600
+		
+		  # set default schedTune value for foreground/top-app (only affects EAS)
+    chmod 0664 /dev/stune/schedtune.boost
+    write /dev/stune/schedtune.boost 0
+    write /dev/stune/schedtune.prefer_idle 1
+    write /dev/stune/background/schedtune.prefer_idle 1
+    write /dev/stune/foreground/schedtune.prefer_idle 1
+    write /dev/stune/foreground/schedtune.boost 0
+    write /dev/stune/top-app/schedtune.boost 5
+    write /dev/stune/top-app/schedtune.prefer_idle 1
 	
 	
 on property:sys.boot_completed=1
