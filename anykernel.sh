@@ -45,10 +45,10 @@ dump_boot;
 # begin ramdisk changes
 
 #### Ramdisk Changes For EAS Kernel Only. Stock Based Mostly ####
-
-setcmdline "androidboot.selinux" "permissive"
-setcmdline "enforcing" "0"
-setcmdline "selinux" "1"
+### Set 'selinux' to 'permissive' ###
+# setcmdline "androidboot.selinux" "permissive"
+# setcmdline "enforcing" "0"
+# setcmdline "selinux" "1"
 
 # end ramdisk changes
 
