@@ -17,8 +17,8 @@ set_perm_recursive() {
   dirs=$(echo $* | $bb awk '{ print substr($0, index($0,$5)) }');
   for i in $dirs; do
     $bb chown -R $1:$2 $i;
-    find "$i" -type d -exec chmod $3 {} +;
-    find "$i" -type f -exec chmod $4 {} +;
+    $bb find "$i" -type d -exec chmod $3 {} +;
+    $bb find "$i" -type f -exec chmod $4 {} +;
   done;
 }
 
@@ -29,31 +29,38 @@ sleep 1
 show_progress 1.34 4;
 ## Acsii Art/Text has a Max width of 53 chars ##
 ##       "12345678901234567890123456789012345678901234567890123"; Max Width##
-ui_print "----------------------------------------------------";
-ui_print ".___        _____                __             .___";
-ui_print "|   | _____/ ____\____   _______/  |_  ____   __| _/";
-ui_print "|   |/    \   __\/ __ \ /  ___/\   __\/ __ \ / __ | ";
-ui_print "|   |   |  \  | \  ___/ \___ \  |  | \  ___// /_/ | ";
-ui_print "|___|___|  /__|  \___  >____  > |__|  \___  >____ | ";
-ui_print "         \/          \/     \/            \/     \/ ";
-ui_print "            __________                              ";
-ui_print "            \______   \___.__.                      ";
-ui_print "             |    |  _<   |  |                      ";
-ui_print "             |    |   \\___  |                      ";
-ui_print "             |______  // ____|                      ";
-ui_print "                    \/ \/                           ";
-ui_print "   _______        ___.         .__                  ";
-ui_print "   \      \   ____\_ |__  __ __|  | _____           ";
-ui_print "   /   |   \_/ __ \| __ \|  |  \  | \__  \          ";
-ui_print "  /    |    \  ___/| \_\ \  |  /  |__/ __ \_        ";
-ui_print "  \____|__  /\___  >___  /____/|____(____  /        ";
-ui_print "          \/     \/    \/                \/         ";
-ui_print "----------------------------------------------------";
+
+ui_print " ____     ___  ____   __ __  _       ____      ";
+ui_print "|    \   /  _]|    \ |  |  || |     /    |     ";
+ui_print "|  _  | /  [_ |  o  )|  |  || |    |  o  |     ";
+ui_print "|  |  ||    _]|     ||  |  || |___ |     |     ";
+ui_print "|  |  ||   [_ |  O  ||  :  ||     ||  _  | __  ";
+ui_print "|  |  ||     ||     ||     ||     ||  |  ||  | ";
+ui_print "|__|__||_____||_____| \__,_||_____||__|__||_ | ";
+ui_print "                                            \| ";
+ui_print "  ___   ____     ___   ___                     ";
+ui_print " /   \ |    \   /  _] /   \                    ";
+ui_print "|     ||  D  ) /  [_ |     |                   ";
+ui_print "|  O  ||    / |    _]|  O  |                   ";
+ui_print "|     ||    \ |   [_ |     |                   ";
+ui_print "|     ||  .  \|     ||     |                   ";
+ui_print " \___/ |__|\_||_____| \___/                    ";
+ui_print "                                               ";
+ui_print "   ___  ___    ____  ______  ____  ___   ____  ";
+ui_print "  /  _]|   \  |    ||      ||    |/   \ |    \ ";
+ui_print " /  [_ |    \  |  | |      | |  ||     ||  _  |";
+ui_print "|    _]|  D  | |  | |_|  |_| |  ||  O  ||  |  |";
+ui_print "|   [_ |     | |  |   |  |   |  ||     ||  |  |";
+ui_print "|     ||     | |  |   |  |   |  ||     ||  |  |";
+ui_print "|_____||_____||____|  |__|  |____|\___/ |__|__|";
+ui_print "                                               ";
+ui_print "-----------------------------------------------";
 sleep 3
 show_progress 1.34 2;
-ui_print "----------------------------------------------------";
-ui_print "*** Installing Nebula Kernel, EAS Edition...."
-ui_print "----------------------------------------------------";
+ui_print "-----------------------------------------------";
+ui_print "| Installing Nebula Kernel, EAS Edition....   |";
+ui_print "|          Oreo Edition Only..                |";
+ui_print "-----------------------------------------------";
 sleep 0.25
 show_progress 1.38 4;
 
@@ -77,10 +84,11 @@ unzip -o "$ZIPFILE";
 if [ $? != 0 -o -z "$(ls /tmp/anykernel/tools)" ]; then
   abort "Unzip failed. Aborting...";
 fi;
-chmod -R 755 /tmp/anykernel/tools /tmp/anykernel/bin;
 bb=/tmp/anykernel/tools/busybox;
+chmod 755 $bb;
+$bb chmod -R 755 /tmp/anykernel/tools /tmp/anykernel/bin;
 
-show_progress 1.34 4;
+show_progress 1.32 4;
 ui_print "$(file_getprop /tmp/anykernel/anykernel.sh kernel.string)";
 ui_print " ";
 ui_print "AnyKernel2 by osm0sis @ xda-developers";
@@ -90,7 +98,7 @@ mount -o ro -t auto /system;
 mount /data 2>/dev/null;
 test -f /system/system/build.prop && root=/system;
 
-show_progress 1.34 4;
+show_progress 1.30 4;
 if [ "$(file_getprop /tmp/anykernel/anykernel.sh do.devicecheck)" == 1 ]; then
   ui_print "Checking device...";
   for i in 1 2 3 4 5; do
@@ -108,7 +116,7 @@ if [ "$(file_getprop /tmp/anykernel/anykernel.sh do.devicecheck)" == 1 ]; then
   fi;
 fi;
 
-show_progress 1.34 4;
+show_progress 1.38 4;
 if [ "$(file_getprop /tmp/anykernel/anykernel.sh do.initd)" == 1 ]; then
   ui_print "Creating init.d...";
   ui_print " ";
@@ -118,47 +126,47 @@ if [ "$(file_getprop /tmp/anykernel/anykernel.sh do.initd)" == 1 ]; then
   mount -o ro,remount -t auto /system;
 fi;
 
-show_progress 1.34 4;
+show_progress 1.36 4;
 if [ "$(file_getprop /tmp/anykernel/anykernel.sh do.pnpmgr)" == 1 ]; then
- 	 		ui_print "[PNPMGR] Rename for backup...";
-  		ui_print " ";
- 		 	mount -o remount,rw -t auto /system;
-  			if [ -e /system/bin/pnpmgr ]; then
-  				mv /system/bin/pnpmgr /system/bin/pnpmgr.bak;
-  				ui_print "[PNPMGR] Renamed system/bin/pnpmgr";
-  			else
-  				ui_print "[PNPMGR] pnpmgr: Already Backed up..";
-  			fi;  	
-  			if [ -e /system/etc/pnp.xml ]; then
-  				mv /system/etc/pnp.xml /system/etc/pnp.xml.bak;
-  				ui_print "[PNPMGR] Renamed system/bin/pnp.xml";
-  			else
-  				ui_print "[PNPMGR] pnp.xml: Already Backed up..";
-  			fi;
-  		mount -o remount,ro -t auto /system;
+            ui_print "[PNPMGR] Rename for backup...";
+        ui_print " ";
+            mount -o remount,rw -t auto /system;
+            if [ -e /system/bin/pnpmgr ]; then
+                mv /system/bin/pnpmgr /system/bin/pnpmgr.bak;
+                ui_print "[PNPMGR] Renamed system/bin/pnpmgr";
+            else
+                ui_print "[PNPMGR] pnpmgr: Already Backed up..";
+            fi;     
+            if [ -e /system/etc/pnp.xml ]; then
+                mv /system/etc/pnp.xml /system/etc/pnp.xml.bak;
+                ui_print "[PNPMGR] Renamed system/bin/pnp.xml";
+            else
+                ui_print "[PNPMGR] pnp.xml: Already Backed up..";
+            fi;
+        mount -o remount,ro -t auto /system;
 fi;
 
-show_progress 1.34 4;
+show_progress 1.39 4;
 if [ "$(file_getprop /tmp/anykernel/anykernel.sh do.pnpmgr)" == 2 ]; then
- 	 		ui_print "[PNPMGR] Fix For Standard Edition..";
-  		ui_print " ";
- 		 	mount -o remount,rw -t auto /system;
-  			if [ -e /system/bin/pnpmgr.bak ]; then
-  				mv /system/bin/pnpmgr.bak /system/bin/pnpmgr;
-  				ui_print "[PNPMGR] Renamed system/bin/pnpmgr.bak";
-  			else
-  				ui_print "[PNPMGR] pnpmgr: Already Fixed..";
-  			fi;  	
-  			if [ -e /system/etc/pnp.xml.bak ]; then
-  				mv /system/etc/pnp.xml.bak /system/etc/pnp.xml;
-  				ui_print "[PNPMGR] Renamed system/bin/pnp.xml.bak";
-  			else
-  				ui_print "[PNPMGR] pnp.xml: Already Fixed..";
-  			fi;
-  		mount -o remount,ro -t auto /system;
+            ui_print "[PNPMGR] Fix For Standard Edition..";
+        ui_print " ";
+            mount -o remount,rw -t auto /system;
+            if [ -e /system/bin/pnpmgr.bak ]; then
+                mv /system/bin/pnpmgr.bak /system/bin/pnpmgr;
+                ui_print "[PNPMGR] Renamed system/bin/pnpmgr.bak";
+            else
+                ui_print "[PNPMGR] pnpmgr: Already Fixed..";
+            fi;     
+            if [ -e /system/etc/pnp.xml.bak ]; then
+                mv /system/etc/pnp.xml.bak /system/etc/pnp.xml;
+                ui_print "[PNPMGR] Renamed system/bin/pnp.xml.bak";
+            else
+                ui_print "[PNPMGR] pnp.xml: Already Fixed..";
+            fi;
+        mount -o remount,ro -t auto /system;
 fi;
 
-show_progress 1.34 4;
+show_progress 1.32 4;
 ui_print "[Nebula] Installing Kernel, Please wait...";
 for i in $($bb --list); do
   $bb ln -s $bb /tmp/anykernel/bin/$i;
@@ -176,37 +184,38 @@ if [ "$(file_getprop /tmp/anykernel/anykernel.sh do.modules)" == 1 ]; then
   ui_print " ";
   ui_print "Pushing modules...";
   mount -o rw,remount -t auto /system;
-  cp -rf /tmp/anykernel/modules/* $root/system/lib/modules/;
+  $bb cp -rLf /tmp/anykernel/modules/* $root/system/lib/modules/;
   set_perm_recursive 0 0 0755 0644 $root/system/lib/modules;
+  chcon -R 'u:object_r:system_file:s0' $root/system/lib/modules;
   mount -o ro,remount -t auto /system;
 fi;
 
-show_progress 1.34 4;
+show_progress 1.35 4;
 if [ "$(file_getprop /tmp/anykernel/anykernel.sh do.eas_support)" == 1 ]; then
-		ui_print "[Nebula] EAS Support: Rom Detection in progress,";
-		ui_print "[Nebula] Please Wait.."
-			ui_print " ";
-			mount -o remount,rw -t auto /system;
-				if [ -e /system/etc/init.qcom.post_boot.sh ]; then
-					ui_print "[EAS] Disable: init.qcom.post_boot.sh ";
-					mv /system/etc/init.qcom.post_boot.sh init.qcom.post_boot.sh.bak;
-				fi
-					if grep -qi  'htc_pmewl-user\|htc_pmeuhl-user\|htc_pmewhl-user' /system/build.prop; then
-						ui_print "[EAS] Stock Based Rom Detected: ";
-						cp -rf /tmp/anykernel/system/* /system/;
-						chmod 0644 /system/lib/libcutils.so;
-						chmod 0644 /system/lib64/libcutils.so;
-					else
-						ui_print "[EAS] LOS Based Rom Detected: "
-						cp -f /tmp/anykernel/system/bin/init.nebula.sh /system/bin/;
-						cp -f /tmp/anykernel/system/bin/init.foreground.sh /system/bin/;
-				 fi
-		chmod 0755 /system/bin/init.foreground.sh;
-		chmod 0755 /system/bin/init.nebula.sh;					
-		mount -o remount,ro -t auto /system;		
+        ui_print "[Nebula] EAS Support: Rom Detection in progress,";
+        ui_print "[Nebula] Please Wait.."
+            ui_print " ";
+            mount -o remount,rw -t auto /system;
+                if [ -e /system/etc/init.qcom.post_boot.sh ]; then
+                    ui_print "[EAS] Disable: init.qcom.post_boot.sh ";
+                    mv /system/etc/init.qcom.post_boot.sh init.qcom.post_boot.sh.bak;
+                fi
+                    if grep -qi  'htc_pmewl-user\|htc_pmeuhl-user\|htc_pmewhl-user' /system/build.prop; then
+                        ui_print "[EAS] Stock Based Rom Detected: ";
+                        cp -rf /tmp/anykernel/system/* /system/;
+                        chmod 0644 /system/lib/libcutils.so;
+                        chmod 0644 /system/lib64/libcutils.so;
+                    else
+                        ui_print "[EAS] LOS Based Rom Detected: "
+                        cp -f /tmp/anykernel/system/bin/init.nebula.sh /system/bin/;
+                        cp -f /tmp/anykernel/system/bin/init.foreground.sh /system/bin/;
+                 fi
+        chmod 0755 /system/bin/init.foreground.sh;
+        chmod 0755 /system/bin/init.nebula.sh;                  
+        mount -o remount,ro -t auto /system;        
 fi;
 
-show_progress 1.34 4;
+show_progress 1.36 4;
 if [ "$(file_getprop /tmp/anykernel/anykernel.sh do.boost_scripts)" == 1 ]; then
 ui_print "[Nebula] Pushing Boot Scripts...";
   ui_print " ";
@@ -222,28 +231,28 @@ ui_print "[Nebula] Pushing Boot Scripts...";
     cp -rf /tmp/anykernel/system/su.d/* /system/su.d/;
     set_perm_recursive 0 0 0755 0755 /system/su.d;
   fi;
-	  mount -o remount,ro -t auto /system;
+      mount -o remount,ro -t auto /system;
 fi;
 
 
-show_progress 1.34 4;
+show_progress 1.37 4;
 if [ "$(file_getprop /tmp/anykernel/anykernel.sh do.system_blobs)" == 1 ]; then
 ui_print "[Nebula] Pushing System Blobs...";
-	ui_print " ";
-	mount -o remount,rw -t auto /system;
-		cp -rf /tmp/anykernel/system/lib/* /system/lib/;
-		cp -rf /tmp/anykernel/system/lib/hw/* /system/lib/hw/;
-		cp -rf /tmp/anykernel/system/lib64/* /system/lib64/;
-		cp -rf /tmp/anykernel/system/lib64/hw/* /system/lib64/hw/;
-		set_perm_recursive 0 0 0755 0755 /system/lib;
-		set_perm_recursive 0 0 0755 0755 /system/lib/hw;
-		set_perm_recursive 0 0 0755 0755 /system/lib64;
-		set_perm_recursive 0 0 0755 0755 /system/lib64/hw;
-		mount -o remount,ro -t auto /system;		
+    ui_print " ";
+    mount -o remount,rw -t auto /system;
+        cp -rf /tmp/anykernel/system/lib/* /system/lib/;
+        cp -rf /tmp/anykernel/system/lib/hw/* /system/lib/hw/;
+        cp -rf /tmp/anykernel/system/lib64/* /system/lib64/;
+        cp -rf /tmp/anykernel/system/lib64/hw/* /system/lib64/hw/;
+        set_perm_recursive 0 0 0755 0755 /system/lib;
+        set_perm_recursive 0 0 0755 0755 /system/lib/hw;
+        set_perm_recursive 0 0 0755 0755 /system/lib64;
+        set_perm_recursive 0 0 0755 0755 /system/lib64/hw;
+        mount -o remount,ro -t auto /system;        
 fi;
 
 
-show_progress 1.34 4;
+show_progress 1.39 4;
 case $(basename "$ZIPFILE" .zip) in
   *-debugging)
     ui_print " ";
@@ -258,17 +267,22 @@ if [ "$(file_getprop /tmp/anykernel/anykernel.sh do.cleanup)" == 1 ]; then
 fi;
 
 umount /system;
-umount /data;
-show_progress 1.34 4;
-ui_print "                     _\|/_                    ";
-ui_print "                     (o o)                     ";
-ui_print "+-----------------oOO-(_)-OOo-----------------+";
-ui_print "|         Device: HTC10                       |";
-ui_print "|         Kernel: EAS Edition                 |";
-ui_print "|         Update: 08/16/2017                  |";
-ui_print "|                                             |";
-ui_print "|     Developed By,                           |";
-ui_print "|              XDA: Eliminater74              |";
-ui_print "|    E-mail: eliminater74@purefusionos.com    |";
-ui_print "+---------------------------------------------+";
-ui_print "                    (_| |_)                    ";
+umount /data 2>/dev/null;
+show_progress 1.40 4;
+## Acsii Art/Text has a Max width of 53 chars ##
+##       "12345678901234567890123456789012345678901234567890123"; Max Width##
+ui_print "                                                     ";
+ui_print "              ___MMM___           |||                ";
+ui_print " _____          (0-0)            (o o)         _____ ";
+ui_print "( ___ )-----oOO--(_)--OOo----ooO--\ /--Ooo----( ___ )";
+ui_print " |   |                                         |   | ";
+ui_print " | / |            NebulaKernel [EAS]           | \ | ";
+ui_print " | / |            Ver: 11.2.1                  | \ | ";
+ui_print " | / |           [Update: 11/11/2017]          | \ | ";
+ui_print " | / |    Device: HTC 10  / PME                | \ | ";
+ui_print " | / |                                         | \ | ";
+ui_print " | / |   Developed By,                         | \ | ";
+ui_print " | / |                XDA: Eliminater74        | \ | ";
+ui_print " |___|  E-mail: eliminater74@purefusionos.com  |___| ";
+ui_print "(_____)---------------------------------------(_____)";
+ui_print "                                                     ";
