@@ -10,7 +10,7 @@ do.modules=0
 do.cleanup=1
 do.cleanuponabort=0
 do.fix_pnpmgr=0
-do.pnpmgr=1
+do.pnpmgr=0
 do.fix_pnpmgr_ramdisk=0
 do.eas_support=1
 do.boost_scripts=0
@@ -49,6 +49,8 @@ dump_boot;
 # setcmdline "androidboot.selinux" "permissive"
 # setcmdline "enforcing" "0"
 # setcmdline "selinux" "1"
+
+# insert_line init.rc "import /init.nebula.rc" after "import /init.fusion.rc" "import /init.nebula.rc";
 
 # end ramdisk changes
 
