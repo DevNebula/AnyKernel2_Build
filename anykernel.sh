@@ -3,16 +3,16 @@
 
 ## AnyKernel setup
 # begin properties
-properties() {
+properties() { '
 kernel.string=Nebula: Custom EAS Kernel By @Eliminater74 For 
 do.devicecheck=1
-do.modules=0
+do.modules=1
 do.cleanup=1
 do.cleanuponabort=0
 do.fix_pnpmgr=0
 do.pnpmgr=0
 do.fix_pnpmgr_ramdisk=0
-do.eas_support=1
+do.eas_support=0
 do.boost_scripts=0
 do.cmdlinestr=0
 do.system_blobs=0
@@ -21,11 +21,12 @@ device.name2=LG-h872
 device.name3=LGE
 device.name4=lge
 device.name5=LGE
-} # end properties
+'; } # end properties
 
 # shell variables
 block=/dev/block/bootdevice/by-name/boot;
 is_slot_device=0;
+ramdisk_compression=auto;
 
 
 ## AnyKernel methods (DO NOT CHANGE)
@@ -33,9 +34,11 @@ is_slot_device=0;
 . /tmp/anykernel/tools/ak2-core.sh;
 
 
-## AnyKernel permissions
-# set permissions for included ramdisk files
-chmod -R 755 $ramdisk
+## AnyKernel file attributes
+# set permissions/ownership for included ramdisk files
+chmod -R 750 $ramdisk/*;
+chmod -R 755 $ramdisk/sbin;
+chown -R root:root $ramdisk/*;
 # chmod 644 $ramdisk/sbin/media_profiles.xml
 file_getprop() { grep "^$2" "$1" | cut -d= -f2; }
 
