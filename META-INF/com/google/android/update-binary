@@ -58,7 +58,7 @@ ui_print "-----------------------------------------------";
 sleep 3
 show_progress 1.34 2;
 ui_print "-----------------------------------------------";
-ui_print "| Installing Nebula Kernel, EAS Edition....   |";
+ui_print "| Installing Nebula Kernel,                   |";
 ui_print "|          Oreo Edition Only..                |";
 ui_print "-----------------------------------------------";
 sleep 0.25
@@ -276,10 +276,10 @@ ui_print "              ___MMM___           |||                ";
 ui_print " _____          (0-0)            (o o)         _____ ";
 ui_print "( ___ )-----oOO--(_)--OOo----ooO--\ /--Ooo----( ___ )";
 ui_print " |   |                                         |   | ";
-ui_print " | / |            NebulaKernel [EAS]           | \ | ";
-ui_print " | / |            Ver: 11.2.1                  | \ | ";
-ui_print " | / |           [Update: 11/11/2017]          | \ | ";
-ui_print " | / |    Device: HTC 10  / PME                | \ | ";
+ui_print " | / |            NebulaKernel                 | \ | ";
+ui_print " | / |            Ver: 1.0.0                   | \ | ";
+ui_print " | / |                                         | \ | ";
+ui_print " | / |    Device:  LG G6, H870, H872, US997    | \ | ";
 ui_print " | / |                                         | \ | ";
 ui_print " | / |   Developed By,                         | \ | ";
 ui_print " | / |                XDA: Eliminater74        | \ | ";
